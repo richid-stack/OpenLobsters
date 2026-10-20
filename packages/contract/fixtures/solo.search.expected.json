@@ -1,0 +1,48 @@
+{
+ "timeline": {
+  "ev": [
+   [
+    "think",
+    0,
+    1,
+    false
+   ],
+   [
+    "tool",
+    "Searched the web",
+    "ok",
+    3,
+    "",
+    "example topic news",
+    ""
+   ],
+   [
+    "think",
+    0,
+    1,
+    false
+   ]
+  ],
+  "t": "Here is a summary drawn from the results [1]. A second point is backed by two more sources [2][3].",
+  "src": [
+   [
+    "example.com",
+    "Example result one",
+    "https://www.example.com/a/one",
+    ""
+   ],
+   [
+    "docs.example.org",
+    "Example result two",
+    "https://docs.example.org/two",
+    ""
+   ],
+   [
+    "github.com",
+    "Example repo",
+    "https://github.com/x/y",
+    ""
+   ]
+  ]
+ }
+}

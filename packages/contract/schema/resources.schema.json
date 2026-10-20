@@ -1,0 +1,616 @@
+{
+ "Tool": {
+  "additionalProperties": false,
+  "properties": {
+   "id": {
+    "minLength": 1,
+    "title": "Id",
+    "type": "string"
+   },
+   "name": {
+    "title": "Name",
+    "type": "string"
+   },
+   "description": {
+    "title": "Description",
+    "type": "string"
+   },
+   "inputSchema": {
+    "additionalProperties": true,
+    "title": "Inputschema",
+    "type": "object"
+   },
+   "permissions": {
+    "items": {
+     "type": "string"
+    },
+    "title": "Permissions",
+    "type": "array"
+   },
+   "risk": {
+    "enum": [
+     "read",
+     "write",
+     "send",
+     "delete"
+    ],
+    "title": "Risk",
+    "type": "string"
+   },
+   "requiresApproval": {
+    "title": "Requiresapproval",
+    "type": "boolean"
+   },
+   "executionType": {
+    "enum": [
+     "external_api",
+     "mcp",
+     "sandbox",
+     "local"
+    ],
+    "title": "Executiontype",
+    "type": "string"
+   },
+   "provider": {
+    "anyOf": [
+     {
+      "type": "string"
+     },
+     {
+      "type": "null"
+     }
+    ],
+    "default": null,
+    "title": "Provider"
+   },
+   "version": {
+    "anyOf": [
+     {
+      "type": "string"
+     },
+     {
+      "type": "null"
+     }
+    ],
+    "default": null,
+    "title": "Version"
+   }
+  },
+  "required": [
+   "id",
+   "name",
+   "description",
+   "inputSchema",
+   "permissions",
+   "risk",
+   "requiresApproval",
+   "executionType"
+  ],
+  "title": "Tool",
+  "type": "object"
+ },
+ "Skill": {
+  "additionalProperties": false,
+  "properties": {
+   "id": {
+    "minLength": 1,
+    "title": "Id",
+    "type": "string"
+   },
+   "name": {
+    "title": "Name",
+    "type": "string"
+   },
+   "description": {
+    "title": "Description",
+    "type": "string"
+   },
+   "version": {
+    "title": "Version",
+    "type": "string"
+   },
+   "source": {
+    "$ref": "#/components/schemas/SkillSource"
+   },
+   "tools": {
+    "items": {
+     "type": "string"
+    },
+    "title": "Tools",
+    "type": "array"
+   },
+   "permissions": {
+    "items": {
+     "type": "string"
+    },
+    "title": "Permissions",
+    "type": "array"
+   },
+   "files": {
+    "items": {
+     "type": "string"
+    },
+    "title": "Files",
+    "type": "array"
+   },
+   "license": {
+    "anyOf": [
+     {
+      "type": "string"
+     },
+     {
+      "type": "null"
+     }
+    ],
+    "default": null,
+    "title": "License"
+   }
+  },
+  "required": [
+   "id",
+   "name",
+   "description",
+   "version",
+   "source",
+   "tools",
+   "permissions",
+   "files"
+  ],
+  "title": "Skill",
+  "type": "object"
+ },
+ "Library": {
+  "additionalProperties": false,
+  "properties": {
+   "id": {
+    "minLength": 1,
+    "title": "Id",
+    "type": "string"
+   },
+   "name": {
+    "title": "Name",
+    "type": "string"
+   },
+   "description": {
+    "title": "Description",
+    "type": "string"
+   },
+   "language": {
+    "enum": [
+     "js",
+     "ts",
+     "python",
+     "other"
+    ],
+    "title": "Language",
+    "type": "string"
+   },
+   "package": {
+    "anyOf": [
+     {
+      "$ref": "#/components/schemas/Package"
+     },
+     {
+      "type": "null"
+     }
+    ],
+    "default": null
+   },
+   "repo": {
+    "anyOf": [
+     {
+      "type": "string"
+     },
+     {
+      "type": "null"
+     }
+    ],
+    "default": null,
+    "title": "Repo"
+   },
+   "license": {
+    "anyOf": [
+     {
+      "type": "string"
+     },
+     {
+      "type": "null"
+     }
+    ],
+    "default": null,
+    "title": "License"
+   },
+   "dependencies": {
+    "items": {
+     "type": "string"
+    },
+    "title": "Dependencies",
+    "type": "array"
+   },
+   "minRuntime": {
+    "anyOf": [
+     {
+      "type": "string"
+     },
+     {
+      "type": "null"
+     }
+    ],
+    "default": null,
+    "title": "Minruntime"
+   },
+   "compat": {
+    "$ref": "#/components/schemas/Compat"
+   }
+  },
+  "required": [
+   "id",
+   "name",
+   "description",
+   "language",
+   "dependencies",
+   "compat"
+  ],
+  "title": "Library",
+  "type": "object"
+ },
+ "McpServer": {
+  "additionalProperties": false,
+  "properties": {
+   "id": {
+    "minLength": 1,
+    "title": "Id",
+    "type": "string"
+   },
+   "name": {
+    "title": "Name",
+    "type": "string"
+   },
+   "url": {
+    "title": "Url",
+    "type": "string"
+   },
+   "transport": {
+    "enum": [
+     "http",
+     "sse",
+     "stdio"
+    ],
+    "title": "Transport",
+    "type": "string"
+   },
+   "auth": {
+    "enum": [
+     "none",
+     "oauth",
+     "key"
+    ],
+    "title": "Auth",
+    "type": "string"
+   },
+   "status": {
+    "enum": [
+     "connected",
+     "disconnected",
+     "error"
+    ],
+    "title": "Status",
+    "type": "string"
+   },
+   "tools": {
+    "items": {
+     "type": "string"
+    },
+    "title": "Tools",
+    "type": "array"
+   }
+  },
+  "required": [
+   "id",
+   "name",
+   "url",
+   "transport",
+   "auth",
+   "status",
+   "tools"
+  ],
+  "title": "McpServer",
+  "type": "object"
+ },
+ "Workflow": {
+  "additionalProperties": false,
+  "properties": {
+   "id": {
+    "minLength": 1,
+    "title": "Id",
+    "type": "string"
+   },
+   "name": {
+    "title": "Name",
+    "type": "string"
+   },
+   "version": {
+    "title": "Version",
+    "type": "string"
+   },
+   "steps": {
+    "items": {
+     "$ref": "#/components/schemas/WorkflowStep"
+    },
+    "minItems": 1,
+    "title": "Steps",
+    "type": "array"
+   }
+  },
+  "required": [
+   "id",
+   "name",
+   "version",
+   "steps"
+  ],
+  "title": "Workflow",
+  "type": "object"
+ },
+ "Agent": {
+  "additionalProperties": false,
+  "properties": {
+   "id": {
+    "minLength": 1,
+    "title": "Id",
+    "type": "string"
+   },
+   "name": {
+    "title": "Name",
+    "type": "string"
+   },
+   "role": {
+    "title": "Role",
+    "type": "string"
+   },
+   "instructions": {
+    "title": "Instructions",
+    "type": "string"
+   },
+   "tools": {
+    "items": {
+     "type": "string"
+    },
+    "title": "Tools",
+    "type": "array"
+   },
+   "icon": {
+    "anyOf": [
+     {
+      "type": "string"
+     },
+     {
+      "type": "null"
+     }
+    ],
+    "default": null,
+    "title": "Icon"
+   }
+  },
+  "required": [
+   "id",
+   "name",
+   "role",
+   "instructions",
+   "tools"
+  ],
+  "title": "Agent",
+  "type": "object"
+ },
+ "Project": {
+  "additionalProperties": false,
+  "properties": {
+   "id": {
+    "minLength": 1,
+    "title": "Id",
+    "type": "string"
+   },
+   "name": {
+    "title": "Name",
+    "type": "string"
+   },
+   "instructions": {
+    "anyOf": [
+     {
+      "type": "string"
+     },
+     {
+      "type": "null"
+     }
+    ],
+    "default": null,
+    "title": "Instructions"
+   },
+   "files": {
+    "items": {
+     "$ref": "#/components/schemas/ProjectFile"
+    },
+    "title": "Files",
+    "type": "array"
+   },
+   "chatIds": {
+    "items": {
+     "type": "string"
+    },
+    "title": "Chatids",
+    "type": "array"
+   }
+  },
+  "required": [
+   "id",
+   "name",
+   "files",
+   "chatIds"
+  ],
+  "title": "Project",
+  "type": "object"
+ },
+ "Memory": {
+  "additionalProperties": false,
+  "properties": {
+   "id": {
+    "minLength": 1,
+    "title": "Id",
+    "type": "string"
+   },
+   "text": {
+    "title": "Text",
+    "type": "string"
+   },
+   "scope": {
+    "enum": [
+     "user",
+     "project"
+    ],
+    "title": "Scope",
+    "type": "string"
+   },
+   "createdAt": {
+    "title": "Createdat",
+    "type": "string"
+   }
+  },
+  "required": [
+   "id",
+   "text",
+   "scope",
+   "createdAt"
+  ],
+  "title": "Memory",
+  "type": "object"
+ },
+ "Permission": {
+  "additionalProperties": false,
+  "properties": {
+   "subject": {
+    "title": "Subject",
+    "type": "string"
+   },
+   "tool": {
+    "title": "Tool",
+    "type": "string"
+   },
+   "mode": {
+    "enum": [
+     "ask",
+     "allow",
+     "deny"
+    ],
+    "title": "Mode",
+    "type": "string"
+   },
+   "scope": {
+    "enum": [
+     "global",
+     "project",
+     "chat"
+    ],
+    "title": "Scope",
+    "type": "string"
+   }
+  },
+  "required": [
+   "subject",
+   "tool",
+   "mode",
+   "scope"
+  ],
+  "title": "Permission",
+  "type": "object"
+ },
+ "Run": {
+  "additionalProperties": false,
+  "properties": {
+   "id": {
+    "minLength": 1,
+    "title": "Id",
+    "type": "string"
+   },
+   "chatId": {
+    "title": "Chatid",
+    "type": "string"
+   },
+   "messageId": {
+    "title": "Messageid",
+    "type": "string"
+   },
+   "engine": {
+    "enum": [
+     "live",
+     "demo",
+     "replay"
+    ],
+    "title": "Engine",
+    "type": "string"
+   },
+   "startedAt": {
+    "title": "Startedat",
+    "type": "string"
+   },
+   "endedAt": {
+    "anyOf": [
+     {
+      "type": "string"
+     },
+     {
+      "type": "null"
+     }
+    ],
+    "default": null,
+    "title": "Endedat"
+   },
+   "usage": {
+    "anyOf": [
+     {
+      "$ref": "#/components/schemas/RunUsage"
+     },
+     {
+      "type": "null"
+     }
+    ],
+    "default": null
+   }
+  },
+  "required": [
+   "id",
+   "chatId",
+   "messageId",
+   "engine",
+   "startedAt"
+  ],
+  "title": "Run",
+  "type": "object"
+ },
+ "Relationship": {
+  "additionalProperties": false,
+  "properties": {
+   "from": {
+    "$ref": "#/components/schemas/Ref"
+   },
+   "to": {
+    "$ref": "#/components/schemas/Ref"
+   },
+   "kind": {
+    "enum": [
+     "depends_on",
+     "uses",
+     "exposes",
+     "requires"
+    ],
+    "title": "Kind",
+    "type": "string"
+   }
+  },
+  "required": [
+   "from",
+   "to",
+   "kind"
+  ],
+  "title": "Relationship",
+  "type": "object"
+ }
+}

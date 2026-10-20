@@ -1,0 +1,149 @@
+{
+ "tool": {
+  "id": "search_web",
+  "name": "Search the web",
+  "description": "Search the public web",
+  "inputSchema": {
+   "type": "object"
+  },
+  "permissions": [
+   "web:read"
+  ],
+  "risk": "read",
+  "requiresApproval": true,
+  "executionType": "mcp",
+  "provider": "parallel"
+ },
+ "skill": {
+  "id": "pdf-reader",
+  "name": "PDF reader",
+  "description": "Reads PDFs",
+  "version": "1.0.0",
+  "source": {
+   "repo": "example/skills",
+   "commit": "abc1234",
+   "path": "pdf"
+  },
+  "tools": [
+   "read_file"
+  ],
+  "permissions": [
+   "files:read"
+  ],
+  "files": [
+   "SKILL.md"
+  ]
+ },
+ "library": {
+  "id": "playwright",
+  "name": "Playwright",
+  "description": "Browser automation",
+  "language": "ts",
+  "package": {
+   "registry": "npm",
+   "name": "playwright",
+   "version": "1.50.0"
+  },
+  "dependencies": [],
+  "compat": {
+   "status": "untested"
+  }
+ },
+ "mcp": {
+  "id": "parallel-search",
+  "name": "Parallel Search",
+  "url": "https://search.parallel.ai/mcp",
+  "transport": "http",
+  "auth": "none",
+  "status": "connected",
+  "tools": [
+   "web_search",
+   "web_fetch"
+  ]
+ },
+ "workflow": {
+  "id": "company-research",
+  "name": "Company research",
+  "version": "1",
+  "steps": [
+   {
+    "id": "s1",
+    "kind": "tool",
+    "ref": "search_web",
+    "inputs": {},
+    "dependsOn": []
+   },
+   {
+    "id": "s2",
+    "kind": "approval",
+    "ref": "user",
+    "inputs": {},
+    "dependsOn": [
+     "s1"
+    ],
+    "retry": {
+     "max": 1
+    }
+   }
+  ]
+ },
+ "agent": {
+  "id": "researcher",
+  "name": "Researcher",
+  "role": "Finds and checks sources",
+  "instructions": "Verify facts and cite them.",
+  "tools": [
+   "search_web"
+  ]
+ },
+ "project": {
+  "id": "p1",
+  "name": "Launch plan",
+  "instructions": "Keep answers short.",
+  "files": [
+   {
+    "id": "f1",
+    "name": "brief.md",
+    "bytes": 1200
+   }
+  ],
+  "chatIds": [
+   "c1"
+  ]
+ },
+ "memory": {
+  "id": "m1",
+  "text": "Prefers short answers",
+  "scope": "user",
+  "createdAt": "2026-10-01T00:00:00Z"
+ },
+ "permission": {
+  "subject": "researcher",
+  "tool": "search_web",
+  "mode": "ask",
+  "scope": "global"
+ },
+ "run": {
+  "id": "run_1",
+  "chatId": "c1",
+  "messageId": "m1",
+  "engine": "live",
+  "startedAt": "2026-10-18T00:00:00Z",
+  "usage": {
+   "inputTokens": 10,
+   "outputTokens": 5,
+   "calls": 1
+  }
+ },
+ "relationship": {
+  "from": {
+   "type": "skill",
+   "id": "pdf-reader"
+  },
+  "to": {
+   "type": "tool",
+   "id": "read_file"
+  },
+  "kind": "uses"
+ }
+}

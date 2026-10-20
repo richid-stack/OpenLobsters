@@ -1,0 +1,17 @@
+{"v":1,"seq":0,"ts":1760000000150,"run":"run_team.staged","type":"run.start","engine":"live"}
+{"v":1,"seq":1,"ts":1760000000550,"run":"run_team.staged","type":"reasoning.end","block":"think_1","seconds":1}
+{"v":1,"seq":2,"ts":1760000000700,"run":"run_team.staged","type":"team.plan","agents":["Planner","Researcher","Writer"],"stages":[["Planner"],["Researcher","Writer"]],"lead":"Let us do this in two steps."}
+{"v":1,"seq":3,"ts":1760000000850,"run":"run_team.staged","type":"agent.update","agent":"Planner","state":"running","task":"Outline the launch steps"}
+{"v":1,"seq":4,"ts":1760000001250,"run":"run_team.staged","type":"agent.update","agent":"Planner","state":"done","message":"Got it, taking this one. @Writer, I will hand you the key points.","findings":"Planner findings, backed by a source [1].","durationMs":501}
+{"v":1,"seq":5,"ts":1760000001400,"run":"run_team.staged","type":"agent.update","agent":"Researcher","state":"running","task":"Find recent launch examples"}
+{"v":1,"seq":6,"ts":1760000001550,"run":"run_team.staged","type":"tool.call","call":"c1","tool":"search_web","query":"launch announcement examples","by":"Researcher","state":"running"}
+{"v":1,"seq":7,"ts":1760000001750,"run":"run_team.staged","type":"source","n":1,"kind":"web","title":"Example result one","domain":"example.com","url":"https://www.example.com/a/one","snippet":"First sample excerpt text. First sample excerpt text. First sample excerpt text. First sample excerpt text. First sample excerpt text. First sample excerpt text. First sample excerpt text. First sample excerpt text.","date":"2026-10-08","query":"launch announcement examples","by":"Researcher"}
+{"v":1,"seq":8,"ts":1760000001950,"run":"run_team.staged","type":"source","n":2,"kind":"web","title":"Example result two","domain":"docs.example.org","url":"https://docs.example.org/two","snippet":"Second excerpt. Second excerpt. Second excerpt. Second excerpt. Second excerpt. Second excerpt. Second excerpt. Second excerpt. Second excerpt. Second excerpt.","query":"launch announcement examples","by":"Researcher"}
+{"v":1,"seq":9,"ts":1760000002150,"run":"run_team.staged","type":"source","n":3,"kind":"web","title":"Example repo","domain":"github.com","url":"https://github.com/x/y","snippet":"Repo text","query":"launch announcement examples","by":"Researcher"}
+{"v":1,"seq":10,"ts":1760000002350,"run":"run_team.staged","type":"tool.call","call":"c1","tool":"search_web","query":"launch announcement examples","by":"Researcher","state":"done","sources":[1,2,3],"durationMs":603}
+{"v":1,"seq":11,"ts":1760000002750,"run":"run_team.staged","type":"agent.update","agent":"Researcher","state":"done","message":"Got it, taking this one. @Writer, I will hand you the key points.","findings":"Researcher findings, backed by a source [1].","durationMs":1106}
+{"v":1,"seq":12,"ts":1760000002900,"run":"run_team.staged","type":"agent.update","agent":"Writer","state":"running","task":"Draft the announcement copy"}
+{"v":1,"seq":13,"ts":1760000003300,"run":"run_team.staged","type":"agent.update","agent":"Writer","state":"done","message":"Got it, taking this one. @Writer, I will hand you the key points.","findings":"Writer findings, backed by a source [1].","durationMs":504}
+{"v":1,"seq":14,"ts":1760000003700,"run":"run_team.staged","type":"reasoning.end","block":"think_2","seconds":1}
+{"v":1,"seq":15,"ts":1760000003760,"run":"run_team.staged","type":"text.delta","text":"Final answer [1]."}
+{"v":1,"seq":16,"ts":1760000003910,"run":"run_team.staged","type":"run.end","reason":"complete"}

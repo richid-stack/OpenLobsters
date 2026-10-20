@@ -1,0 +1,305 @@
+[
+ {
+  "name": "seq gap",
+  "events": [
+   {
+    "v": 1,
+    "seq": 0,
+    "ts": 1000,
+    "run": "r",
+    "type": "run.start",
+    "engine": "live"
+   },
+   {
+    "v": 1,
+    "seq": 1,
+    "ts": 1001,
+    "run": "r",
+    "type": "text.delta",
+    "text": "a"
+   },
+   {
+    "v": 1,
+    "seq": 3,
+    "ts": 1002,
+    "run": "r",
+    "type": "text.delta",
+    "text": "b"
+   },
+   {
+    "v": 1,
+    "seq": 4,
+    "ts": 1003,
+    "run": "r",
+    "type": "run.end",
+    "reason": "complete"
+   }
+  ],
+  "expect": "seq 3 at position 2"
+ },
+ {
+  "name": "tool done before running",
+  "events": [
+   {
+    "v": 1,
+    "seq": 0,
+    "ts": 1000,
+    "run": "r",
+    "type": "run.start",
+    "engine": "live"
+   },
+   {
+    "v": 1,
+    "seq": 1,
+    "ts": 1001,
+    "run": "r",
+    "type": "tool.call",
+    "call": "c1",
+    "tool": "search_web",
+    "state": "done"
+   },
+   {
+    "v": 1,
+    "seq": 2,
+    "ts": 1002,
+    "run": "r",
+    "type": "run.end",
+    "reason": "complete"
+   }
+  ],
+  "expect": "start -> done is not allowed"
+ },
+ {
+  "name": "response without request",
+  "events": [
+   {
+    "v": 1,
+    "seq": 0,
+    "ts": 1000,
+    "run": "r",
+    "type": "run.start",
+    "engine": "live"
+   },
+   {
+    "v": 1,
+    "seq": 1,
+    "ts": 1001,
+    "run": "r",
+    "type": "approval.response",
+    "call": "c1",
+    "decision": "once"
+   },
+   {
+    "v": 1,
+    "seq": 2,
+    "ts": 1002,
+    "run": "r",
+    "type": "run.end",
+    "reason": "complete"
+   }
+  ],
+  "expect": "without a request"
+ },
+ {
+  "name": "source numbering gap",
+  "events": [
+   {
+    "v": 1,
+    "seq": 0,
+    "ts": 1000,
+    "run": "r",
+    "type": "run.start",
+    "engine": "live"
+   },
+   {
+    "v": 1,
+    "seq": 1,
+    "ts": 1001,
+    "run": "r",
+    "type": "source",
+    "n": 2,
+    "kind": "web",
+    "title": "t",
+    "domain": "d"
+   },
+   {
+    "v": 1,
+    "seq": 2,
+    "ts": 1002,
+    "run": "r",
+    "type": "run.end",
+    "reason": "complete"
+   }
+  ],
+  "expect": "expected 1, got 2"
+ },
+ {
+  "name": "missing run.end",
+  "events": [
+   {
+    "v": 1,
+    "seq": 0,
+    "ts": 1000,
+    "run": "r",
+    "type": "run.start",
+    "engine": "live"
+   },
+   {
+    "v": 1,
+    "seq": 1,
+    "ts": 1001,
+    "run": "r",
+    "type": "text.delta",
+    "text": "a"
+   }
+  ],
+  "expect": "last event must be run.end"
+ },
+ {
+  "name": "runs after deny",
+  "events": [
+   {
+    "v": 1,
+    "seq": 0,
+    "ts": 1000,
+    "run": "r",
+    "type": "run.start",
+    "engine": "live"
+   },
+   {
+    "v": 1,
+    "seq": 1,
+    "ts": 1001,
+    "run": "r",
+    "type": "tool.call",
+    "call": "c1",
+    "tool": "search_web",
+    "state": "awaiting-approval"
+   },
+   {
+    "v": 1,
+    "seq": 2,
+    "ts": 1002,
+    "run": "r",
+    "type": "approval.request",
+    "call": "c1",
+    "tool": "search_web"
+   },
+   {
+    "v": 1,
+    "seq": 3,
+    "ts": 1003,
+    "run": "r",
+    "type": "approval.response",
+    "call": "c1",
+    "decision": "deny"
+   },
+   {
+    "v": 1,
+    "seq": 4,
+    "ts": 1004,
+    "run": "r",
+    "type": "tool.call",
+    "call": "c1",
+    "tool": "search_web",
+    "state": "running"
+   },
+   {
+    "v": 1,
+    "seq": 5,
+    "ts": 1005,
+    "run": "r",
+    "type": "tool.call",
+    "call": "c1",
+    "tool": "search_web",
+    "state": "done"
+   },
+   {
+    "v": 1,
+    "seq": 6,
+    "ts": 1006,
+    "run": "r",
+    "type": "run.end",
+    "reason": "complete"
+   }
+  ],
+  "expect": "without an allowing response"
+ },
+ {
+  "name": "tool never finishes",
+  "events": [
+   {
+    "v": 1,
+    "seq": 0,
+    "ts": 1000,
+    "run": "r",
+    "type": "run.start",
+    "engine": "live"
+   },
+   {
+    "v": 1,
+    "seq": 1,
+    "ts": 1001,
+    "run": "r",
+    "type": "tool.call",
+    "call": "c1",
+    "tool": "search_web",
+    "state": "running"
+   },
+   {
+    "v": 1,
+    "seq": 2,
+    "ts": 1002,
+    "run": "r",
+    "type": "run.end",
+    "reason": "complete"
+   }
+  ],
+  "expect": "never finished"
+ },
+ {
+  "name": "cites missing source",
+  "events": [
+   {
+    "v": 1,
+    "seq": 0,
+    "ts": 1000,
+    "run": "r",
+    "type": "run.start",
+    "engine": "live"
+   },
+   {
+    "v": 1,
+    "seq": 1,
+    "ts": 1001,
+    "run": "r",
+    "type": "tool.call",
+    "call": "c1",
+    "tool": "search_web",
+    "state": "running"
+   },
+   {
+    "v": 1,
+    "seq": 2,
+    "ts": 1002,
+    "run": "r",
+    "type": "tool.call",
+    "call": "c1",
+    "tool": "search_web",
+    "state": "done",
+    "sources": [
+     1
+    ]
+   },
+   {
+    "v": 1,
+    "seq": 3,
+    "ts": 1003,
+    "run": "r",
+    "type": "run.end",
+    "reason": "complete"
+   }
+  ],
+  "expect": "before it exists"
+ }
+]

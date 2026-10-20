@@ -1,0 +1,1639 @@
+openapi: 3.1.0
+info:
+  title: OpenLobs API
+  version: 1.0.0
+  description: Contract between the OpenLobs frontend and backend. The chat stream is Server-Sent Events;
+    every `data:` line is one `Event`.
+paths:
+  /v1/chat/stream:
+    post:
+      summary: Start a run and stream its events
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatRequest'
+      responses:
+        '200':
+          description: text/event-stream. Each `data:` line is a JSON Event.
+          content:
+            text/event-stream:
+              schema:
+                $ref: '#/components/schemas/Event'
+  /v1/approvals:
+    post:
+      summary: Answer an approval request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApprovalBody'
+      responses: &id001
+        '200':
+          description: OK
+  /v1/runs/{run}/stop:
+    post:
+      summary: Stop a running run
+      parameters:
+      - name: run
+        in: path
+        required: true
+        schema:
+          type: string
+      responses: *id001
+  /v1/resources/{type}:
+    get:
+      summary: List or search resources (capability search)
+      parameters:
+      - name: type
+        in: path
+        required: true
+        schema:
+          type: string
+          enum: &id002
+          - agent
+          - library
+          - mcp
+          - memory
+          - permission
+          - project
+          - relationship
+          - run
+          - skill
+          - tool
+          - workflow
+      - name: q
+        in: query
+        schema:
+          type: string
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          default: 25
+      responses: *id001
+  /v1/resources/{type}/{id}:
+    get:
+      summary: Get one resource
+      parameters:
+      - name: type
+        in: path
+        required: true
+        schema:
+          type: string
+          enum: *id002
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses: *id001
+  /v1/relationships:
+    get:
+      summary: Relationships of a resource
+      parameters:
+      - name: type
+        in: query
+        schema:
+          type: string
+      - name: id
+        in: query
+        schema:
+          type: string
+      responses: *id001
+  /v1/permissions:
+    get:
+      summary: List permissions
+      responses: *id001
+    put:
+      summary: Set a permission
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Permission'
+      responses: *id001
+components:
+  schemas:
+    AgentUpdate:
+      additionalProperties: false
+      properties:
+        v:
+          const: 1
+          title: V
+          type: integer
+        seq:
+          minimum: 0
+          title: Seq
+          type: integer
+        ts:
+          minimum: 0
+          title: Ts
+          type: integer
+        run:
+          minLength: 1
+          title: Run
+          type: string
+        type:
+          const: agent.update
+          title: Type
+          type: string
+        agent:
+          minLength: 1
+          title: Agent
+          type: string
+        state:
+          enum:
+          - running
+          - done
+          - error
+          title: State
+          type: string
+        task:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          title: Task
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          title: Message
+        findings:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          title: Findings
+        durationMs:
+          anyOf:
+          - minimum: 0
+            type: integer
+          - type: 'null'
+          default: null
+          title: Durationms
+      required:
+      - v
+      - seq
+      - ts
+      - run
+      - type
+      - agent
+      - state
+      title: AgentUpdate
+      type: object
+    ApprovalRequest:
+      additionalProperties: false
+      properties:
+        v:
+          const: 1
+          title: V
+          type: integer
+        seq:
+          minimum: 0
+          title: Seq
+          type: integer
+        ts:
+          minimum: 0
+          title: Ts
+          type: integer
+        run:
+          minLength: 1
+          title: Run
+          type: string
+        type:
+          const: approval.request
+          title: Type
+          type: string
+        call:
+          minLength: 1
+          title: Call
+          type: string
+        tool:
+          minLength: 1
+          title: Tool
+          type: string
+        query:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          title: Query
+        why:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          title: Why
+      required:
+      - v
+      - seq
+      - ts
+      - run
+      - type
+      - call
+      - tool
+      title: ApprovalRequest
+      type: object
+    ApprovalResponse:
+      additionalProperties: false
+      properties:
+        v:
+          const: 1
+          title: V
+          type: integer
+        seq:
+          minimum: 0
+          title: Seq
+          type: integer
+        ts:
+          minimum: 0
+          title: Ts
+          type: integer
+        run:
+          minLength: 1
+          title: Run
+          type: string
+        type:
+          const: approval.response
+          title: Type
+          type: string
+        call:
+          minLength: 1
+          title: Call
+          type: string
+        decision:
+          enum:
+          - once
+          - always
+          - deny
+          title: Decision
+          type: string
+      required:
+      - v
+      - seq
+      - ts
+      - run
+      - type
+      - call
+      - decision
+      title: ApprovalResponse
+      type: object
+    Error:
+      additionalProperties: false
+      properties:
+        v:
+          const: 1
+          title: V
+          type: integer
+        seq:
+          minimum: 0
+          title: Seq
+          type: integer
+        ts:
+          minimum: 0
+          title: Ts
+          type: integer
+        run:
+          minLength: 1
+          title: Run
+          type: string
+        type:
+          const: error
+          title: Type
+          type: string
+        code:
+          minLength: 1
+          title: Code
+          type: string
+        message:
+          title: Message
+          type: string
+        retryable:
+          title: Retryable
+          type: boolean
+      required:
+      - v
+      - seq
+      - ts
+      - run
+      - type
+      - code
+      - message
+      - retryable
+      title: Error
+      type: object
+    Handoff:
+      additionalProperties: false
+      properties:
+        v:
+          const: 1
+          title: V
+          type: integer
+        seq:
+          minimum: 0
+          title: Seq
+          type: integer
+        ts:
+          minimum: 0
+          title: Ts
+          type: integer
+        run:
+          minLength: 1
+          title: Run
+          type: string
+        type:
+          const: handoff
+          title: Type
+          type: string
+        from:
+          minLength: 1
+          title: From
+          type: string
+        to:
+          minLength: 1
+          title: To
+          type: string
+        note:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          title: Note
+      required:
+      - v
+      - seq
+      - ts
+      - run
+      - type
+      - from
+      - to
+      title: Handoff
+      type: object
+    ReasoningDelta:
+      additionalProperties: false
+      properties:
+        v:
+          const: 1
+          title: V
+          type: integer
+        seq:
+          minimum: 0
+          title: Seq
+          type: integer
+        ts:
+          minimum: 0
+          title: Ts
+          type: integer
+        run:
+          minLength: 1
+          title: Run
+          type: string
+        type:
+          const: reasoning.delta
+          title: Type
+          type: string
+        block:
+          minLength: 1
+          title: Block
+          type: string
+        text:
+          title: Text
+          type: string
+      required:
+      - v
+      - seq
+      - ts
+      - run
+      - type
+      - block
+      - text
+      title: ReasoningDelta
+      type: object
+    ReasoningEnd:
+      additionalProperties: false
+      properties:
+        v:
+          const: 1
+          title: V
+          type: integer
+        seq:
+          minimum: 0
+          title: Seq
+          type: integer
+        ts:
+          minimum: 0
+          title: Ts
+          type: integer
+        run:
+          minLength: 1
+          title: Run
+          type: string
+        type:
+          const: reasoning.end
+          title: Type
+          type: string
+        block:
+          minLength: 1
+          title: Block
+          type: string
+        seconds:
+          minimum: 0
+          title: Seconds
+          type: number
+      required:
+      - v
+      - seq
+      - ts
+      - run
+      - type
+      - block
+      - seconds
+      title: ReasoningEnd
+      type: object
+    RunEnd:
+      additionalProperties: false
+      properties:
+        v:
+          const: 1
+          title: V
+          type: integer
+        seq:
+          minimum: 0
+          title: Seq
+          type: integer
+        ts:
+          minimum: 0
+          title: Ts
+          type: integer
+        run:
+          minLength: 1
+          title: Run
+          type: string
+        type:
+          const: run.end
+          title: Type
+          type: string
+        reason:
+          enum:
+          - complete
+          - stopped
+          - error
+          title: Reason
+          type: string
+      required:
+      - v
+      - seq
+      - ts
+      - run
+      - type
+      - reason
+      title: RunEnd
+      type: object
+    RunStart:
+      additionalProperties: false
+      properties:
+        v:
+          const: 1
+          title: V
+          type: integer
+        seq:
+          minimum: 0
+          title: Seq
+          type: integer
+        ts:
+          minimum: 0
+          title: Ts
+          type: integer
+        run:
+          minLength: 1
+          title: Run
+          type: string
+        type:
+          const: run.start
+          title: Type
+          type: string
+        engine:
+          enum:
+          - live
+          - demo
+          - replay
+          title: Engine
+          type: string
+        model:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          title: Model
+      required:
+      - v
+      - seq
+      - ts
+      - run
+      - type
+      - engine
+      title: RunStart
+      type: object
+    Source:
+      additionalProperties: false
+      properties:
+        v:
+          const: 1
+          title: V
+          type: integer
+        seq:
+          minimum: 0
+          title: Seq
+          type: integer
+        ts:
+          minimum: 0
+          title: Ts
+          type: integer
+        run:
+          minLength: 1
+          title: Run
+          type: string
+        type:
+          const: source
+          title: Type
+          type: string
+        n:
+          exclusiveMinimum: 0
+          title: N
+          type: integer
+        kind:
+          enum:
+          - web
+          - chat
+          title: Kind
+          type: string
+        title:
+          title: Title
+          type: string
+        domain:
+          title: Domain
+          type: string
+        url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          title: Url
+        snippet:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          title: Snippet
+        date:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          title: Date
+        query:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          title: Query
+        by:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          title: By
+        chatId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          title: Chatid
+      required:
+      - v
+      - seq
+      - ts
+      - run
+      - type
+      - n
+      - kind
+      - title
+      - domain
+      title: Source
+      type: object
+    Status:
+      additionalProperties: false
+      properties:
+        v:
+          const: 1
+          title: V
+          type: integer
+        seq:
+          minimum: 0
+          title: Seq
+          type: integer
+        ts:
+          minimum: 0
+          title: Ts
+          type: integer
+        run:
+          minLength: 1
+          title: Run
+          type: string
+        type:
+          const: status
+          title: Type
+          type: string
+        text:
+          minLength: 1
+          title: Text
+          type: string
+        kind:
+          anyOf:
+          - enum:
+            - info
+            - attention
+            - error
+            type: string
+          - type: 'null'
+          default: null
+          title: Kind
+      required:
+      - v
+      - seq
+      - ts
+      - run
+      - type
+      - text
+      title: Status
+      type: object
+    TeamPlan:
+      additionalProperties: false
+      properties:
+        v:
+          const: 1
+          title: V
+          type: integer
+        seq:
+          minimum: 0
+          title: Seq
+          type: integer
+        ts:
+          minimum: 0
+          title: Ts
+          type: integer
+        run:
+          minLength: 1
+          title: Run
+          type: string
+        type:
+          const: team.plan
+          title: Type
+          type: string
+        agents:
+          items:
+            minLength: 1
+            type: string
+          minItems: 1
+          title: Agents
+          type: array
+        stages:
+          items:
+            items:
+              minLength: 1
+              type: string
+            minItems: 1
+            type: array
+          minItems: 1
+          title: Stages
+          type: array
+        lead:
+          title: Lead
+          type: string
+      required:
+      - v
+      - seq
+      - ts
+      - run
+      - type
+      - agents
+      - stages
+      - lead
+      title: TeamPlan
+      type: object
+    TextDelta:
+      additionalProperties: false
+      properties:
+        v:
+          const: 1
+          title: V
+          type: integer
+        seq:
+          minimum: 0
+          title: Seq
+          type: integer
+        ts:
+          minimum: 0
+          title: Ts
+          type: integer
+        run:
+          minLength: 1
+          title: Run
+          type: string
+        type:
+          const: text.delta
+          title: Type
+          type: string
+        text:
+          title: Text
+          type: string
+      required:
+      - v
+      - seq
+      - ts
+      - run
+      - type
+      - text
+      title: TextDelta
+      type: object
+    ToolCall:
+      additionalProperties: false
+      properties:
+        v:
+          const: 1
+          title: V
+          type: integer
+        seq:
+          minimum: 0
+          title: Seq
+          type: integer
+        ts:
+          minimum: 0
+          title: Ts
+          type: integer
+        run:
+          minLength: 1
+          title: Run
+          type: string
+        type:
+          const: tool.call
+          title: Type
+          type: string
+        call:
+          minLength: 1
+          title: Call
+          type: string
+        tool:
+          minLength: 1
+          title: Tool
+          type: string
+        state:
+          enum:
+          - input-streaming
+          - awaiting-approval
+          - running
+          - done
+          - error
+          - denied
+          title: State
+          type: string
+        query:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          title: Query
+        why:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          title: Why
+        by:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          title: By
+        sources:
+          anyOf:
+          - items:
+              exclusiveMinimum: 0
+              type: integer
+            type: array
+          - type: 'null'
+          default: null
+          title: Sources
+        durationMs:
+          anyOf:
+          - minimum: 0
+            type: integer
+          - type: 'null'
+          default: null
+          title: Durationms
+        error:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          title: Error
+      required:
+      - v
+      - seq
+      - ts
+      - run
+      - type
+      - call
+      - tool
+      - state
+      title: ToolCall
+      type: object
+    Usage:
+      additionalProperties: false
+      properties:
+        v:
+          const: 1
+          title: V
+          type: integer
+        seq:
+          minimum: 0
+          title: Seq
+          type: integer
+        ts:
+          minimum: 0
+          title: Ts
+          type: integer
+        run:
+          minLength: 1
+          title: Run
+          type: string
+        type:
+          const: usage
+          title: Type
+          type: string
+        inputTokens:
+          minimum: 0
+          title: Inputtokens
+          type: integer
+        outputTokens:
+          minimum: 0
+          title: Outputtokens
+          type: integer
+        calls:
+          minimum: 0
+          title: Calls
+          type: integer
+        costUsd:
+          anyOf:
+          - minimum: 0
+            type: number
+          - type: 'null'
+          default: null
+          title: Costusd
+      required:
+      - v
+      - seq
+      - ts
+      - run
+      - type
+      - inputTokens
+      - outputTokens
+      - calls
+      title: Usage
+      type: object
+    Event:
+      discriminator:
+        mapping:
+          agent.update: '#/components/schemas/AgentUpdate'
+          approval.request: '#/components/schemas/ApprovalRequest'
+          approval.response: '#/components/schemas/ApprovalResponse'
+          error: '#/components/schemas/Error'
+          handoff: '#/components/schemas/Handoff'
+          reasoning.delta: '#/components/schemas/ReasoningDelta'
+          reasoning.end: '#/components/schemas/ReasoningEnd'
+          run.end: '#/components/schemas/RunEnd'
+          run.start: '#/components/schemas/RunStart'
+          source: '#/components/schemas/Source'
+          status: '#/components/schemas/Status'
+          team.plan: '#/components/schemas/TeamPlan'
+          text.delta: '#/components/schemas/TextDelta'
+          tool.call: '#/components/schemas/ToolCall'
+          usage: '#/components/schemas/Usage'
+        propertyName: type
+      oneOf:
+      - $ref: '#/components/schemas/RunStart'
+      - $ref: '#/components/schemas/TextDelta'
+      - $ref: '#/components/schemas/ReasoningDelta'
+      - $ref: '#/components/schemas/ReasoningEnd'
+      - $ref: '#/components/schemas/Status'
+      - $ref: '#/components/schemas/ToolCall'
+      - $ref: '#/components/schemas/Source'
+      - $ref: '#/components/schemas/TeamPlan'
+      - $ref: '#/components/schemas/AgentUpdate'
+      - $ref: '#/components/schemas/Handoff'
+      - $ref: '#/components/schemas/ApprovalRequest'
+      - $ref: '#/components/schemas/ApprovalResponse'
+      - $ref: '#/components/schemas/Usage'
+      - $ref: '#/components/schemas/Error'
+      - $ref: '#/components/schemas/RunEnd'
+    Tool:
+      additionalProperties: false
+      properties:
+        id:
+          minLength: 1
+          title: Id
+          type: string
+        name:
+          title: Name
+          type: string
+        description:
+          title: Description
+          type: string
+        inputSchema:
+          additionalProperties: true
+          title: Inputschema
+          type: object
+        permissions:
+          items:
+            type: string
+          title: Permissions
+          type: array
+        risk:
+          enum:
+          - read
+          - write
+          - send
+          - delete
+          title: Risk
+          type: string
+        requiresApproval:
+          title: Requiresapproval
+          type: boolean
+        executionType:
+          enum:
+          - external_api
+          - mcp
+          - sandbox
+          - local
+          title: Executiontype
+          type: string
+        provider:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          title: Provider
+        version:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          title: Version
+      required:
+      - id
+      - name
+      - description
+      - inputSchema
+      - permissions
+      - risk
+      - requiresApproval
+      - executionType
+      title: Tool
+      type: object
+    SkillSource:
+      additionalProperties: false
+      properties:
+        repo:
+          title: Repo
+          type: string
+        commit:
+          title: Commit
+          type: string
+        path:
+          title: Path
+          type: string
+      required:
+      - repo
+      - commit
+      - path
+      title: SkillSource
+      type: object
+    Skill:
+      additionalProperties: false
+      properties:
+        id:
+          minLength: 1
+          title: Id
+          type: string
+        name:
+          title: Name
+          type: string
+        description:
+          title: Description
+          type: string
+        version:
+          title: Version
+          type: string
+        source:
+          $ref: '#/components/schemas/SkillSource'
+        tools:
+          items:
+            type: string
+          title: Tools
+          type: array
+        permissions:
+          items:
+            type: string
+          title: Permissions
+          type: array
+        files:
+          items:
+            type: string
+          title: Files
+          type: array
+        license:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          title: License
+      required:
+      - id
+      - name
+      - description
+      - version
+      - source
+      - tools
+      - permissions
+      - files
+      title: Skill
+      type: object
+    Compat:
+      additionalProperties: false
+      properties:
+        status:
+          enum:
+          - untested
+          - passing
+          - failing
+          title: Status
+          type: string
+        checkedAt:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          title: Checkedat
+      required:
+      - status
+      title: Compat
+      type: object
+    Package:
+      additionalProperties: false
+      properties:
+        registry:
+          enum:
+          - npm
+          - pypi
+          title: Registry
+          type: string
+        name:
+          title: Name
+          type: string
+        version:
+          title: Version
+          type: string
+      required:
+      - registry
+      - name
+      - version
+      title: Package
+      type: object
+    Library:
+      additionalProperties: false
+      properties:
+        id:
+          minLength: 1
+          title: Id
+          type: string
+        name:
+          title: Name
+          type: string
+        description:
+          title: Description
+          type: string
+        language:
+          enum:
+          - js
+          - ts
+          - python
+          - other
+          title: Language
+          type: string
+        package:
+          anyOf:
+          - $ref: '#/components/schemas/Package'
+          - type: 'null'
+          default: null
+        repo:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          title: Repo
+        license:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          title: License
+        dependencies:
+          items:
+            type: string
+          title: Dependencies
+          type: array
+        minRuntime:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          title: Minruntime
+        compat:
+          $ref: '#/components/schemas/Compat'
+      required:
+      - id
+      - name
+      - description
+      - language
+      - dependencies
+      - compat
+      title: Library
+      type: object
+    McpServer:
+      additionalProperties: false
+      properties:
+        id:
+          minLength: 1
+          title: Id
+          type: string
+        name:
+          title: Name
+          type: string
+        url:
+          title: Url
+          type: string
+        transport:
+          enum:
+          - http
+          - sse
+          - stdio
+          title: Transport
+          type: string
+        auth:
+          enum:
+          - none
+          - oauth
+          - key
+          title: Auth
+          type: string
+        status:
+          enum:
+          - connected
+          - disconnected
+          - error
+          title: Status
+          type: string
+        tools:
+          items:
+            type: string
+          title: Tools
+          type: array
+      required:
+      - id
+      - name
+      - url
+      - transport
+      - auth
+      - status
+      - tools
+      title: McpServer
+      type: object
+    Retry:
+      additionalProperties: false
+      properties:
+        max:
+          minimum: 0
+          title: Max
+          type: integer
+      required:
+      - max
+      title: Retry
+      type: object
+    WorkflowStep:
+      additionalProperties: false
+      properties:
+        id:
+          minLength: 1
+          title: Id
+          type: string
+        kind:
+          enum:
+          - tool
+          - skill
+          - agent
+          - approval
+          title: Kind
+          type: string
+        ref:
+          title: Ref
+          type: string
+        inputs:
+          additionalProperties: true
+          title: Inputs
+          type: object
+        dependsOn:
+          items:
+            type: string
+          title: Dependson
+          type: array
+        retry:
+          anyOf:
+          - $ref: '#/components/schemas/Retry'
+          - type: 'null'
+          default: null
+        timeoutMs:
+          anyOf:
+          - exclusiveMinimum: 0
+            type: integer
+          - type: 'null'
+          default: null
+          title: Timeoutms
+      required:
+      - id
+      - kind
+      - ref
+      - inputs
+      - dependsOn
+      title: WorkflowStep
+      type: object
+    Workflow:
+      additionalProperties: false
+      properties:
+        id:
+          minLength: 1
+          title: Id
+          type: string
+        name:
+          title: Name
+          type: string
+        version:
+          title: Version
+          type: string
+        steps:
+          items:
+            $ref: '#/components/schemas/WorkflowStep'
+          minItems: 1
+          title: Steps
+          type: array
+      required:
+      - id
+      - name
+      - version
+      - steps
+      title: Workflow
+      type: object
+    Agent:
+      additionalProperties: false
+      properties:
+        id:
+          minLength: 1
+          title: Id
+          type: string
+        name:
+          title: Name
+          type: string
+        role:
+          title: Role
+          type: string
+        instructions:
+          title: Instructions
+          type: string
+        tools:
+          items:
+            type: string
+          title: Tools
+          type: array
+        icon:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          title: Icon
+      required:
+      - id
+      - name
+      - role
+      - instructions
+      - tools
+      title: Agent
+      type: object
+    ProjectFile:
+      additionalProperties: false
+      properties:
+        id:
+          minLength: 1
+          title: Id
+          type: string
+        name:
+          title: Name
+          type: string
+        bytes:
+          minimum: 0
+          title: Bytes
+          type: integer
+      required:
+      - id
+      - name
+      - bytes
+      title: ProjectFile
+      type: object
+    Project:
+      additionalProperties: false
+      properties:
+        id:
+          minLength: 1
+          title: Id
+          type: string
+        name:
+          title: Name
+          type: string
+        instructions:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          title: Instructions
+        files:
+          items:
+            $ref: '#/components/schemas/ProjectFile'
+          title: Files
+          type: array
+        chatIds:
+          items:
+            type: string
+          title: Chatids
+          type: array
+      required:
+      - id
+      - name
+      - files
+      - chatIds
+      title: Project
+      type: object
+    Memory:
+      additionalProperties: false
+      properties:
+        id:
+          minLength: 1
+          title: Id
+          type: string
+        text:
+          title: Text
+          type: string
+        scope:
+          enum:
+          - user
+          - project
+          title: Scope
+          type: string
+        createdAt:
+          title: Createdat
+          type: string
+      required:
+      - id
+      - text
+      - scope
+      - createdAt
+      title: Memory
+      type: object
+    Permission:
+      additionalProperties: false
+      properties:
+        subject:
+          title: Subject
+          type: string
+        tool:
+          title: Tool
+          type: string
+        mode:
+          enum:
+          - ask
+          - allow
+          - deny
+          title: Mode
+          type: string
+        scope:
+          enum:
+          - global
+          - project
+          - chat
+          title: Scope
+          type: string
+      required:
+      - subject
+      - tool
+      - mode
+      - scope
+      title: Permission
+      type: object
+    RunUsage:
+      additionalProperties: false
+      properties:
+        inputTokens:
+          title: Inputtokens
+          type: integer
+        outputTokens:
+          title: Outputtokens
+          type: integer
+        calls:
+          title: Calls
+          type: integer
+      required:
+      - inputTokens
+      - outputTokens
+      - calls
+      title: RunUsage
+      type: object
+    Run:
+      additionalProperties: false
+      properties:
+        id:
+          minLength: 1
+          title: Id
+          type: string
+        chatId:
+          title: Chatid
+          type: string
+        messageId:
+          title: Messageid
+          type: string
+        engine:
+          enum:
+          - live
+          - demo
+          - replay
+          title: Engine
+          type: string
+        startedAt:
+          title: Startedat
+          type: string
+        endedAt:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          title: Endedat
+        usage:
+          anyOf:
+          - $ref: '#/components/schemas/RunUsage'
+          - type: 'null'
+          default: null
+      required:
+      - id
+      - chatId
+      - messageId
+      - engine
+      - startedAt
+      title: Run
+      type: object
+    Ref:
+      additionalProperties: false
+      properties:
+        type:
+          enum:
+          - library
+          - skill
+          - tool
+          - mcp
+          - workflow
+          - agent
+          title: Type
+          type: string
+        id:
+          minLength: 1
+          title: Id
+          type: string
+      required:
+      - type
+      - id
+      title: Ref
+      type: object
+    Relationship:
+      additionalProperties: false
+      properties:
+        from:
+          $ref: '#/components/schemas/Ref'
+        to:
+          $ref: '#/components/schemas/Ref'
+        kind:
+          enum:
+          - depends_on
+          - uses
+          - exposes
+          - requires
+          title: Kind
+          type: string
+      required:
+      - from
+      - to
+      - kind
+      title: Relationship
+      type: object
+    ChatOptions:
+      properties:
+        web:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          default: null
+          title: Web
+      title: ChatOptions
+      type: object
+    Msg:
+      properties:
+        role:
+          enum:
+          - user
+          - assistant
+          title: Role
+          type: string
+        content:
+          title: Content
+          type: string
+      required:
+      - role
+      - content
+      title: Msg
+      type: object
+    ChatRequest:
+      properties:
+        chatId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          title: Chatid
+        projectId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          title: Projectid
+        agents:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          default: null
+          title: Agents
+        options:
+          anyOf:
+          - $ref: '#/components/schemas/ChatOptions'
+          - type: 'null'
+          default: null
+        messages:
+          items:
+            $ref: '#/components/schemas/Msg'
+          title: Messages
+          type: array
+      required:
+      - messages
+      title: ChatRequest
+      type: object
+    ApprovalBody:
+      properties:
+        run:
+          title: Run
+          type: string
+        call:
+          title: Call
+          type: string
+        decision:
+          enum:
+          - once
+          - always
+          - deny
+          title: Decision
+          type: string
+      required:
+      - run
+      - call
+      - decision
+      title: ApprovalBody
+      type: object

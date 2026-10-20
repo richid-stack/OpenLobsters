@@ -1,0 +1,78 @@
+{
+ "timeline": {
+  "ev": [
+   [
+    "think",
+    0,
+    1,
+    false
+   ],
+   [
+    "team",
+    "Planner,Researcher,Writer",
+    "[[\"Planner\"],[\"Researcher\",\"Writer\"]]",
+    0
+   ],
+   [
+    "agent",
+    "Planner",
+    "ok",
+    "Outline the launch steps",
+    "Got it, taking this one. @Writer, I will hand you the key points.",
+    "Planner findings, backed by a source [1]."
+   ],
+   [
+    "agent",
+    "Researcher",
+    "ok",
+    "Find recent launch examples",
+    "Got it, taking this one. @Writer, I will hand you the key points.",
+    "Researcher findings, backed by a source [1]."
+   ],
+   [
+    "tool",
+    "Searched the web",
+    "ok",
+    3,
+    "Researcher",
+    "launch announcement examples",
+    ""
+   ],
+   [
+    "agent",
+    "Writer",
+    "ok",
+    "Draft the announcement copy",
+    "Got it, taking this one. @Writer, I will hand you the key points.",
+    "Writer findings, backed by a source [1]."
+   ],
+   [
+    "think",
+    0,
+    1,
+    false
+   ]
+  ],
+  "t": "Final answer [1].",
+  "src": [
+   [
+    "example.com",
+    "Example result one",
+    "https://www.example.com/a/one",
+    ""
+   ],
+   [
+    "docs.example.org",
+    "Example result two",
+    "https://docs.example.org/two",
+    ""
+   ],
+   [
+    "github.com",
+    "Example repo",
+    "https://github.com/x/y",
+    ""
+   ]
+  ]
+ }
+}

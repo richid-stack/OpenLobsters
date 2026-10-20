@@ -1,0 +1,15 @@
+{"v":1,"seq":0,"ts":1760000000120,"run":"run_approval_allowed","type":"run.start","engine":"live","model":"claude"}
+{"v":1,"seq":1,"ts":1760000000240,"run":"run_approval_allowed","type":"reasoning.delta","block":"t1","text":"The user wants current news, so I should search the web."}
+{"v":1,"seq":2,"ts":1760000000640,"run":"run_approval_allowed","type":"reasoning.end","block":"t1","seconds":2}
+{"v":1,"seq":3,"ts":1760000000760,"run":"run_approval_allowed","type":"tool.call","call":"c1","tool":"search_web","state":"awaiting-approval","query":"ghana mobile money news","why":"Your question needs current information"}
+{"v":1,"seq":4,"ts":1760000000880,"run":"run_approval_allowed","type":"approval.request","call":"c1","tool":"search_web","query":"ghana mobile money news","why":"Your question needs current information"}
+{"v":1,"seq":5,"ts":1760000003380,"run":"run_approval_allowed","type":"approval.response","call":"c1","decision":"once"}
+{"v":1,"seq":6,"ts":1760000003430,"run":"run_approval_allowed","type":"tool.call","call":"c1","tool":"search_web","state":"running","query":"ghana mobile money news"}
+{"v":1,"seq":7,"ts":1760000003630,"run":"run_approval_allowed","type":"source","n":1,"kind":"web","title":"Example result one","domain":"example.com","url":"https://www.example.com/a/one","snippet":"Sample excerpt text for Example result one.","query":"ghana mobile money news","date":"2026-10-08"}
+{"v":1,"seq":8,"ts":1760000003830,"run":"run_approval_allowed","type":"source","n":2,"kind":"web","title":"Example result two","domain":"docs.example.org","url":"https://docs.example.org/two","snippet":"Sample excerpt text for Example result two.","query":"ghana mobile money news"}
+{"v":1,"seq":9,"ts":1760000004030,"run":"run_approval_allowed","type":"source","n":3,"kind":"web","title":"Example repo","domain":"github.com","url":"https://github.com/example/repo","snippet":"Sample excerpt text for Example repo.","query":"ghana mobile money news"}
+{"v":1,"seq":10,"ts":1760000004130,"run":"run_approval_allowed","type":"tool.call","call":"c1","tool":"search_web","state":"done","query":"ghana mobile money news","sources":[1,2,3],"durationMs":900}
+{"v":1,"seq":11,"ts":1760000004250,"run":"run_approval_allowed","type":"text.delta","text":"Here is a summary drawn from the results [1]. "}
+{"v":1,"seq":12,"ts":1760000004370,"run":"run_approval_allowed","type":"text.delta","text":"A second point is backed by two more sources [2][3]."}
+{"v":1,"seq":13,"ts":1760000004490,"run":"run_approval_allowed","type":"usage","inputTokens":812,"outputTokens":64,"calls":2}
+{"v":1,"seq":14,"ts":1760000004610,"run":"run_approval_allowed","type":"run.end","reason":"complete"}

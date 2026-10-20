@@ -1,0 +1,11 @@
+{"v":1,"seq":0,"ts":1760000000150,"run":"run_solo.search","type":"run.start","engine":"live"}
+{"v":1,"seq":1,"ts":1760000000550,"run":"run_solo.search","type":"reasoning.end","block":"think_1","seconds":1}
+{"v":1,"seq":2,"ts":1760000000700,"run":"run_solo.search","type":"tool.call","call":"c1","tool":"search_web","query":"example topic news","state":"running"}
+{"v":1,"seq":3,"ts":1760000000900,"run":"run_solo.search","type":"source","n":1,"kind":"web","title":"Example result one","domain":"example.com","url":"https://www.example.com/a/one","snippet":"First sample excerpt text. First sample excerpt text. First sample excerpt text. First sample excerpt text. First sample excerpt text. First sample excerpt text. First sample excerpt text. First sample excerpt text.","date":"2026-10-08","query":"example topic news"}
+{"v":1,"seq":4,"ts":1760000001100,"run":"run_solo.search","type":"source","n":2,"kind":"web","title":"Example result two","domain":"docs.example.org","url":"https://docs.example.org/two","snippet":"Second excerpt. Second excerpt. Second excerpt. Second excerpt. Second excerpt. Second excerpt. Second excerpt. Second excerpt. Second excerpt. Second excerpt.","query":"example topic news"}
+{"v":1,"seq":5,"ts":1760000001300,"run":"run_solo.search","type":"source","n":3,"kind":"web","title":"Example repo","domain":"github.com","url":"https://github.com/x/y","snippet":"Repo text","query":"example topic news"}
+{"v":1,"seq":6,"ts":1760000001500,"run":"run_solo.search","type":"tool.call","call":"c1","tool":"search_web","query":"example topic news","state":"done","sources":[1,2,3],"durationMs":602}
+{"v":1,"seq":7,"ts":1760000001900,"run":"run_solo.search","type":"reasoning.end","block":"think_2","seconds":1}
+{"v":1,"seq":8,"ts":1760000001960,"run":"run_solo.search","type":"text.delta","text":"Here is a summary drawn from the results [1]. A second point"}
+{"v":1,"seq":9,"ts":1760000002020,"run":"run_solo.search","type":"text.delta","text":" is backed by two more sources [2][3]."}
+{"v":1,"seq":10,"ts":1760000002170,"run":"run_solo.search","type":"run.end","reason":"complete"}

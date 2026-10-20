@@ -1,0 +1,8 @@
+{"v":1,"seq":0,"ts":1760000000120,"run":"run_approval_denied","type":"run.start","engine":"live","model":"claude"}
+{"v":1,"seq":1,"ts":1760000000240,"run":"run_approval_denied","type":"tool.call","call":"c1","tool":"search_web","state":"awaiting-approval","query":"ghana mobile money news","why":"Your question needs current information"}
+{"v":1,"seq":2,"ts":1760000000360,"run":"run_approval_denied","type":"approval.request","call":"c1","tool":"search_web","query":"ghana mobile money news"}
+{"v":1,"seq":3,"ts":1760000002160,"run":"run_approval_denied","type":"approval.response","call":"c1","decision":"deny"}
+{"v":1,"seq":4,"ts":1760000002210,"run":"run_approval_denied","type":"tool.call","call":"c1","tool":"search_web","state":"denied","query":"ghana mobile money news"}
+{"v":1,"seq":5,"ts":1760000002330,"run":"run_approval_denied","type":"text.delta","text":"I was not allowed to search the web, so this comes from what I already know and may be out of date."}
+{"v":1,"seq":6,"ts":1760000002450,"run":"run_approval_denied","type":"usage","inputTokens":640,"outputTokens":40,"calls":2}
+{"v":1,"seq":7,"ts":1760000002570,"run":"run_approval_denied","type":"run.end","reason":"complete"}

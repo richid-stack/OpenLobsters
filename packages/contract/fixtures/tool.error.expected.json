@@ -1,0 +1,29 @@
+{
+ "timeline": {
+  "ev": [
+   [
+    "think",
+    0,
+    1,
+    false
+   ],
+   [
+    "tool",
+    "Searched the web",
+    "err",
+    0,
+    "",
+    "example topic news",
+    "Parallel Search is not connected. Add it in claude.ai Settings, Connectors."
+   ],
+   [
+    "think",
+    0,
+    1,
+    false
+   ]
+  ],
+  "t": "Here is a summary drawn from the results [1]. A second point is backed by two more sources [2][3].",
+  "src": []
+ }
+}

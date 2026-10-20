@@ -1,0 +1,8 @@
+{"v":1,"seq":0,"ts":1760000000150,"run":"run_tool.error","type":"run.start","engine":"live"}
+{"v":1,"seq":1,"ts":1760000000550,"run":"run_tool.error","type":"reasoning.end","block":"think_1","seconds":1}
+{"v":1,"seq":2,"ts":1760000000700,"run":"run_tool.error","type":"tool.call","call":"c1","tool":"search_web","query":"example topic news","state":"running"}
+{"v":1,"seq":3,"ts":1760000000900,"run":"run_tool.error","type":"tool.call","call":"c1","tool":"search_web","query":"example topic news","state":"error","error":"Parallel Search is not connected. Add it in claude.ai Settings, Connectors.","durationMs":3}
+{"v":1,"seq":4,"ts":1760000001300,"run":"run_tool.error","type":"reasoning.end","block":"think_2","seconds":1}
+{"v":1,"seq":5,"ts":1760000001360,"run":"run_tool.error","type":"text.delta","text":"Here is a summary drawn from the results [1]. A second point"}
+{"v":1,"seq":6,"ts":1760000001420,"run":"run_tool.error","type":"text.delta","text":" is backed by two more sources [2][3]."}
+{"v":1,"seq":7,"ts":1760000001570,"run":"run_tool.error","type":"run.end","reason":"complete"}

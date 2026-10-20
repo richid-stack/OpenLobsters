@@ -1,0 +1,24 @@
+/* Generated from design/tokens.json. Flat colours only. */
+:root{
+  --background:#fff;
+  --sidebar:#f9f9f9;
+  --text:#0d0d0d;
+  --textMuted:#6b6b6b;
+  --border:#0000001a;
+  --hover:#0000000d;
+  --bubble:#f4f4f4;
+  --popover:#fff;
+  --shadow:0 4px 24px #0002;
+  --accent:#e8442e;
+}
+:root[data-theme=dark]{
+  --background:#212121;
+  --sidebar:#171717;
+  --text:#ececec;
+  --textMuted:#afafaf;
+  --border:#ffffff26;
+  --hover:#ffffff14;
+  --bubble:#303030;
+  --popover:#2f2f2f;
+  --shadow:0 4px 24px #0008;
+}

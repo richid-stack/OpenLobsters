@@ -1,0 +1,69 @@
+{
+ "discriminator": {
+  "mapping": {
+   "agent.update": "#/components/schemas/AgentUpdate",
+   "approval.request": "#/components/schemas/ApprovalRequest",
+   "approval.response": "#/components/schemas/ApprovalResponse",
+   "error": "#/components/schemas/Error",
+   "handoff": "#/components/schemas/Handoff",
+   "reasoning.delta": "#/components/schemas/ReasoningDelta",
+   "reasoning.end": "#/components/schemas/ReasoningEnd",
+   "run.end": "#/components/schemas/RunEnd",
+   "run.start": "#/components/schemas/RunStart",
+   "source": "#/components/schemas/Source",
+   "status": "#/components/schemas/Status",
+   "team.plan": "#/components/schemas/TeamPlan",
+   "text.delta": "#/components/schemas/TextDelta",
+   "tool.call": "#/components/schemas/ToolCall",
+   "usage": "#/components/schemas/Usage"
+  },
+  "propertyName": "type"
+ },
+ "oneOf": [
+  {
+   "$ref": "#/components/schemas/RunStart"
+  },
+  {
+   "$ref": "#/components/schemas/TextDelta"
+  },
+  {
+   "$ref": "#/components/schemas/ReasoningDelta"
+  },
+  {
+   "$ref": "#/components/schemas/ReasoningEnd"
+  },
+  {
+   "$ref": "#/components/schemas/Status"
+  },
+  {
+   "$ref": "#/components/schemas/ToolCall"
+  },
+  {
+   "$ref": "#/components/schemas/Source"
+  },
+  {
+   "$ref": "#/components/schemas/TeamPlan"
+  },
+  {
+   "$ref": "#/components/schemas/AgentUpdate"
+  },
+  {
+   "$ref": "#/components/schemas/Handoff"
+  },
+  {
+   "$ref": "#/components/schemas/ApprovalRequest"
+  },
+  {
+   "$ref": "#/components/schemas/ApprovalResponse"
+  },
+  {
+   "$ref": "#/components/schemas/Usage"
+  },
+  {
+   "$ref": "#/components/schemas/Error"
+  },
+  {
+   "$ref": "#/components/schemas/RunEnd"
+  }
+ ]
+}

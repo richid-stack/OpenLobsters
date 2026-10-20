@@ -1,0 +1,126 @@
+[
+ {
+  "name": "missing run",
+  "event": {
+   "v": 1,
+   "seq": 0,
+   "ts": 1,
+   "type": "text.delta",
+   "text": "x"
+  }
+ },
+ {
+  "name": "unknown type",
+  "event": {
+   "v": 1,
+   "seq": 0,
+   "ts": 1,
+   "run": "r",
+   "type": "text.chunk",
+   "text": "x"
+  }
+ },
+ {
+  "name": "bad tool state",
+  "event": {
+   "v": 1,
+   "seq": 0,
+   "ts": 1,
+   "run": "r",
+   "type": "tool.call",
+   "call": "c",
+   "tool": "t",
+   "state": "finished"
+  }
+ },
+ {
+  "name": "source n is zero",
+  "event": {
+   "v": 1,
+   "seq": 0,
+   "ts": 1,
+   "run": "r",
+   "type": "source",
+   "n": 0,
+   "kind": "web",
+   "title": "t",
+   "domain": "d"
+  }
+ },
+ {
+  "name": "extra field",
+  "event": {
+   "v": 1,
+   "seq": 0,
+   "ts": 1,
+   "run": "r",
+   "type": "text.delta",
+   "text": "x",
+   "extra": 1
+  }
+ },
+ {
+  "name": "wrong version",
+  "event": {
+   "v": 2,
+   "seq": 0,
+   "ts": 1,
+   "run": "r",
+   "type": "text.delta",
+   "text": "x"
+  }
+ },
+ {
+  "name": "text.delta without text",
+  "event": {
+   "v": 1,
+   "seq": 0,
+   "ts": 1,
+   "run": "r",
+   "type": "text.delta"
+  }
+ },
+ {
+  "name": "empty plan",
+  "event": {
+   "v": 1,
+   "seq": 0,
+   "ts": 1,
+   "run": "r",
+   "type": "team.plan",
+   "agents": [],
+   "stages": [
+    [
+     "a"
+    ]
+   ],
+   "lead": "x"
+  }
+ },
+ {
+  "name": "bad decision",
+  "event": {
+   "v": 1,
+   "seq": 0,
+   "ts": 1,
+   "run": "r",
+   "type": "approval.response",
+   "call": "c",
+   "decision": "maybe"
+  }
+ },
+ {
+  "name": "negative duration",
+  "event": {
+   "v": 1,
+   "seq": 0,
+   "ts": 1,
+   "run": "r",
+   "type": "tool.call",
+   "call": "c",
+   "tool": "t",
+   "state": "done",
+   "durationMs": -5
+  }
+ }
+]

@@ -1,0 +1,101 @@
+[
+ {
+  "name": "tool with unknown field",
+  "type": "tool",
+  "value": {
+   "id": "search_web",
+   "name": "Search the web",
+   "description": "Search the public web",
+   "inputSchema": {
+    "type": "object"
+   },
+   "permissions": [
+    "web:read"
+   ],
+   "risk": "read",
+   "requiresApproval": true,
+   "executionType": "mcp",
+   "provider": "parallel",
+   "colour": "red"
+  }
+ },
+ {
+  "name": "tool with bad risk",
+  "type": "tool",
+  "value": {
+   "id": "search_web",
+   "name": "Search the web",
+   "description": "Search the public web",
+   "inputSchema": {
+    "type": "object"
+   },
+   "permissions": [
+    "web:read"
+   ],
+   "risk": "dangerous",
+   "requiresApproval": true,
+   "executionType": "mcp",
+   "provider": "parallel"
+  }
+ },
+ {
+  "name": "skill missing source",
+  "type": "skill",
+  "value": {
+   "id": "pdf-reader",
+   "name": "PDF reader",
+   "description": "Reads PDFs",
+   "version": "1.0.0",
+   "tools": [
+    "read_file"
+   ],
+   "permissions": [
+    "files:read"
+   ],
+   "files": [
+    "SKILL.md"
+   ]
+  }
+ },
+ {
+  "name": "workflow with no steps",
+  "type": "workflow",
+  "value": {
+   "id": "company-research",
+   "name": "Company research",
+   "version": "1",
+   "steps": []
+  }
+ },
+ {
+  "name": "mcp with bad transport",
+  "type": "mcp",
+  "value": {
+   "id": "parallel-search",
+   "name": "Parallel Search",
+   "url": "https://search.parallel.ai/mcp",
+   "transport": "carrier-pigeon",
+   "auth": "none",
+   "status": "connected",
+   "tools": [
+    "web_search",
+    "web_fetch"
+   ]
+  }
+ },
+ {
+  "name": "relationship with bad kind",
+  "type": "relationship",
+  "value": {
+   "from": {
+    "type": "skill",
+    "id": "pdf-reader"
+   },
+   "to": {
+    "type": "tool",
+    "id": "read_file"
+   },
+   "kind": "likes"
+  }
+ }
+]
