@@ -45,7 +45,7 @@ The product vision, tool registry, Bridge, verification engine, scheduler and bu
 - Pages `/icons` (the icon sheet), and placeholders `/bridge`, `/skills`, `/teams`.
 - **Models (bring your own key):** `shared/providers.ts` (catalog of 14 providers plus custom OpenAI-compatible endpoints), `server/providers/` (`registry.ts` builds a model from a selection, `models.ts` fetches and normalises model lists, `netGuard.ts` blocks dangerous addresses, `redact.ts` strips keys from errors), routes `GET /api/providers`, `POST /api/providers/models`, `POST /api/providers/test`, and `POST /api/chat` accepting a `model` selection. App side: `src/composables/useModels.ts` (keys and selection in browser localStorage), `src/pages/models.vue`, `src/components/models/`.
 - Decisions for Models: keys live in the browser and travel in each request body, never stored by the server; self-hosters can use `OPENLOBS_<PROVIDER>_API_KEY` env vars (see `.env.example`); capabilities are never guessed (OpenRouter's list is used, everything else is "unknown" until the Test button checks tool calling); a model without tools still works as plain chat; custom addresses are guarded against SSRF, and cloud-metadata/link-local addresses are always blocked.
-- Tests: 34 passing (`npm test`): demo model, status line, providers and the network guard. `tests/mockOpenAI.mts` is a fake OpenAI-compatible server (run it with `npx tsx tests/runMock.mts`, key `test-key`, `http://127.0.0.1:4010/v1`) used for tests and screenshots.
+- Tests: 40 passing (`npm test`): demo model, status line, providers and the network guard. `tests/mockOpenAI.mts` is a fake OpenAI-compatible server (run it with `npx tsx tests/runMock.mts`, key `test-key`, `http://127.0.0.1:4010/v1`) used for tests and screenshots.
 - Typechecks clean: `npm run typecheck` and `npm run typecheck:server`.
 
 ### Try it
@@ -58,6 +58,12 @@ npm run dev          # http://localhost:3000
 ```
 
 Say: "Summarise my sales and make me a workbook". Watch reasoning, three tool calls, then the approval card, then verification. Try Deny as well.
+
+### Design rules the owner has set (do not regress)
+
+- **No cards and no border lines in the chat.** Assistant answers, tool steps, approvals, verification checks and errors are plain flat content: icon, text, soft-filled badges (never ringed), plain buttons. No boxes, no bordered panels, no outlined chips. The message box itself keeps its normal outline. The Models settings page still uses cards; the owner's rule was about the chat.
+- **Model picker sits in the message box** (next to the + button, so a thumb reaches it). The Bridge status is an icon in the top bar.
+- **Real brand logos** for providers and labs (`shared/brands.ts`, Lobe Icons, MIT, bundled by `scripts/build-icons.mjs`). A model shows its lab's logo (a Claude model through OpenRouter shows Claude), then the provider's logo, then a generic icon. Colour versions only where they stay readable in dark mode.
 
 ## What is NOT real yet (be honest about this)
 
@@ -102,6 +108,8 @@ Say: "Summarise my sales and make me a workbook". Watch reasoning, three tool ca
 - The network guard let a request through to the cloud-metadata address in development mode, and an IPv6-mapped form (`::ffff:a9fe:a9fe`, which is what URL parsing produces) slipped past the first fix. Both are fixed and tested.
 - `docs` once said 44 tests when the count was 34: always count from the real test output.
 - The dev server can stop when packages are installed. Check it before taking screenshots.
+- `pkill -f "pattern"` kills the shell running it when the pattern appears in the same command. Use `pkill -f "[p]attern"` or avoid it.
+- Do not make up real model ids in tests or screenshots. The fake provider's OpenRouter-style list uses obviously sample ids (`anthropic/claude-sample`).
 
 ## Practical notes for the next session (tooling)
 

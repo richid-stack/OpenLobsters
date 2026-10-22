@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import type { ModelInfo, ProviderDef } from '../../../shared/providers'
+import { brandIcon } from '../../../shared/brands'
 import { useModels } from '../../composables/useModels'
 
 const props = defineProps<{ def: ProviderDef, open: boolean }>()
@@ -100,8 +101,8 @@ const ctx = (n?: number | null) => (n ? `${n >= 1_000_000 ? `${(n / 1_000_000).t
       @click="emit('toggle')"
     >
       <UIcon
-        :name="def.local ? 'i-lucide-hard-drive' : def.custom ? 'i-lucide-plug-zap' : 'i-lucide-cloud'"
-        class="size-5 shrink-0 text-muted"
+        :name="brandIcon(def.id, undefined, def.custom ? 'i-lucide-plug-zap' : 'i-lucide-cloud')"
+        class="size-6 shrink-0 text-highlighted"
       />
       <span class="min-w-0 flex-1">
         <span class="block text-sm font-medium text-highlighted truncate">{{ def.name }}</span>
@@ -270,6 +271,10 @@ const ctx = (n?: number | null) => (n ? `${n >= 1_000_000 ? `${(n / 1_000_000).t
                 class="w-full text-left px-3 py-2 flex items-center gap-2 hover:bg-elevated/60"
                 @click="m.select(def.id, x.id)"
               >
+                <UIcon
+                  :name="brandIcon(def.id, x.id)"
+                  class="size-5 shrink-0 text-highlighted"
+                />
                 <span class="min-w-0 flex-1">
                   <span class="block text-sm text-highlighted truncate">{{ x.id }}</span>
                   <span class="flex flex-wrap items-center gap-1 mt-0.5">

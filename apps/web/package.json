@@ -10,7 +10,7 @@
     "icons": "node scripts/build-icons.mjs",
     "typecheck": "vue-tsc -p ./tsconfig.app.json",
     "typecheck:server": "tsc -p tsconfig.server.json",
-    "test": "tsx tests/demoModel.test.mts && tsx tests/status.test.mts && tsx tests/providers.test.mts"
+    "test": "tsx tests/demoModel.test.mts && tsx tests/status.test.mts && tsx tests/providers.test.mts && tsx tests/brands.test.mts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.85",
@@ -35,6 +35,7 @@
   },
   "devDependencies": {
     "@iconify-json/lucide": "^1.2.145",
+    "@lobehub/icons-static-svg": "^1.98.0",
     "@types/node": "^24.13.3",
     "@vitejs/plugin-vue": "^6.0.8",
     "tsx": "^4.23.15",

@@ -56,7 +56,7 @@ const verified = computed(() => name.value === 'verify_artifact' && output.value
     >
       <div
         v-if="part.input !== undefined || output"
-        class="p-2.5 border border-default rounded-md bg-elevated/40 text-xs font-mono max-h-48 overflow-y-auto space-y-2"
+        class="text-xs font-mono max-h-48 overflow-y-auto space-y-3 py-1"
       >
         <pre
           v-if="part.input !== undefined"
@@ -64,7 +64,7 @@ const verified = computed(() => name.value === 'verify_artifact' && output.value
         >{{ pretty(part.input) }}</pre>
         <pre
           v-if="output"
-          class="whitespace-pre-wrap text-muted border-t border-default pt-2"
+          class="whitespace-pre-wrap text-muted"
         >{{ pretty(output) }}</pre>
       </div>
     </UChatTool>
@@ -86,7 +86,7 @@ const verified = computed(() => name.value === 'verify_artifact' && output.value
           :icon="locationIcon"
           :label="LOCATION_LABEL[meta.location]"
           color="neutral"
-          variant="subtle"
+          variant="soft"
           size="sm"
         />
         <UBadge
@@ -94,7 +94,7 @@ const verified = computed(() => name.value === 'verify_artifact' && output.value
           icon="i-lucide-pencil-line"
           label="Changes something"
           color="warning"
-          variant="subtle"
+          variant="soft"
           size="sm"
         />
         <UBadge
@@ -102,21 +102,21 @@ const verified = computed(() => name.value === 'verify_artifact' && output.value
           icon="i-openlobs-verify"
           label="Verified"
           color="success"
-          variant="subtle"
+          variant="soft"
           size="sm"
         />
         <UBadge
           v-if="output?.demo"
           label="Demo data"
           color="neutral"
-          variant="outline"
+          variant="soft"
           size="sm"
         />
       </div>
 
       <div
         v-if="waiting"
-        class="rounded-lg border border-warning/40 bg-warning/5 p-3 space-y-2.5"
+        class="space-y-2.5 pt-1"
       >
         <div class="flex items-start gap-2">
           <UIcon
@@ -159,7 +159,7 @@ const verified = computed(() => name.value === 'verify_artifact' && output.value
 
       <ul
         v-if="checks.length"
-        class="space-y-1 rounded-lg border border-default bg-elevated/40 p-2.5"
+        class="space-y-1.5 pt-0.5"
       >
         <li
           v-for="c in checks"

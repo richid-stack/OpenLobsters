@@ -19,6 +19,30 @@ export async function startMockOpenAI(opts: MockOptions = {}) {
     const auth = req.headers.authorization
     requests.push({ path: req.url ?? '', auth, body })
 
+    // An OpenRouter-shaped public model list, with sample ids from many labs. The ids are made up
+    // ("...-sample") so nothing here pretends to be a real model. Used to check logos and capability badges.
+    if (req.method === 'GET' && req.url?.startsWith('/or/v1/models')) {
+      const row = (id: string, context_length: number, supported_parameters?: string[]) => ({ id, name: id.split('/')[1], context_length, ...(supported_parameters ? { supported_parameters } : {}) })
+      res.writeHead(200, { 'content-type': 'application/json' })
+      return void res.end(JSON.stringify({ data: [
+        row('anthropic/claude-sample', 200000, ['tools', 'reasoning', 'temperature']),
+        row('openai/gpt-sample', 128000, ['tools', 'temperature']),
+        row('google/gemini-sample', 1000000, ['tools', 'reasoning']),
+        row('meta-llama/llama-sample', 128000, ['tools']),
+        row('mistralai/mistral-sample', 32000, ['temperature']),
+        row('deepseek/deepseek-sample', 64000, ['reasoning']),
+        row('qwen/qwen-sample', 128000, ['tools', 'reasoning']),
+        row('x-ai/grok-sample', 256000, ['tools']),
+        row('cohere/command-sample', 128000, ['tools']),
+        row('microsoft/phi-sample', 16000, ['temperature']),
+        row('nvidia/nemotron-sample', 128000, ['tools']),
+        row('perplexity/sonar-sample', 128000, ['temperature']),
+        row('moonshotai/kimi-sample', 128000, ['tools']),
+        row('z-ai/glm-sample', 128000, ['tools', 'reasoning']),
+        row('some-lab/unknown-sample', 8000)
+      ] }))
+    }
+
     if (opts.requireKey && auth !== `Bearer ${opts.requireKey}`) {
       res.writeHead(401, { 'content-type': 'application/json' })
       return void res.end(JSON.stringify({ error: { message: 'Incorrect API key provided' } }))

@@ -67,7 +67,7 @@ Discover, Build, Lab, Compose, Skills Studio, Forge, Intelligence, Benchmark, Gr
 | Real verification of outputs | Not started | |
 | Artifact storage | Not started | |
 | Billing, teams, sharing | Not started | |
-| Tests | 34 passing | Demo model, status line, providers and the network guard. |
+| Tests | 40 passing | Demo model, status line, providers, the network guard and brand icons. |
 
 ## What the first usable version still needs, in order
 

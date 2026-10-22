@@ -16,11 +16,11 @@ watch(() => props.view.chips.length, async () => {
 })
 
 const chipClass = (state: string) => ({
-  live: 'border-primary/30 bg-primary/10 text-primary',
-  done: 'border-default bg-elevated/60 text-muted',
-  waiting: 'border-warning/40 bg-warning/10 text-warning-700 dark:text-warning-400',
-  bad: 'border-error/30 bg-error/10 text-error'
-}[state] ?? 'border-default text-muted')
+  live: 'bg-primary/10 text-primary',
+  done: 'bg-elevated text-muted',
+  waiting: 'bg-warning/15 text-warning-700 dark:text-warning-400',
+  bad: 'bg-error/10 text-error'
+}[state] ?? 'bg-elevated text-muted')
 </script>
 
 <template>
@@ -77,7 +77,7 @@ const chipClass = (state: string) => ({
       <span
         v-for="chip in shown"
         :key="chip.key"
-        class="ol-chip-in shrink-0 inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs"
+        class="ol-chip-in shrink-0 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs"
         :class="chipClass(chip.state)"
       >
         <UIcon

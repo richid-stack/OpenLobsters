@@ -1,5 +1,6 @@
 import { computed, ref } from 'vue'
 import { useLocalStorage } from '@vueuse/core'
+import { brandIcon } from '../../shared/brands'
 import { CUSTOM_PROVIDER_PREFIX, PROVIDERS } from '../../shared/providers'
 import type { ModelInfo, ModelSelection, ProviderDef } from '../../shared/providers'
 
@@ -57,6 +58,9 @@ export function useModels() {
     return s ? conn(s.providerId).models?.find(m => m.id === s.modelId) : undefined
   })
   const label = computed(() => state.value.selected ? state.value.selected.modelId : 'Demo model')
+  /** Short form for tight spaces: the model without its "lab/" prefix, because the logo already says who made it. */
+  const shortLabel = computed(() => label.value.includes('/') ? label.value.slice(label.value.indexOf('/') + 1) : label.value)
+  const icon = computed(() => state.value.selected ? brandIcon(state.value.selected.providerId, state.value.selected.modelId) : 'i-openlobs-spark')
   const providerLabel = computed(() => selectedDef.value?.name ?? 'Built in')
 
   /** What goes with each chat request. Undefined means the built-in demo model. */
@@ -89,7 +93,7 @@ export function useModels() {
   }
 
   return {
-    state, providers, serverKeys, conn, patch, status, label, providerLabel, selectedInfo, payload, addCustom, removeProvider,
+    state, providers, serverKeys, conn, patch, status, label, shortLabel, icon, providerLabel, selectedInfo, payload, addCustom, removeProvider,
     select: (providerId: string, modelId: string) => { state.value.selected = { providerId, modelId } },
     selectDemo: () => { state.value.selected = null },
     isSelected: (providerId: string, modelId: string) => state.value.selected?.providerId === providerId && state.value.selected.modelId === modelId

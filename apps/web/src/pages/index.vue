@@ -87,7 +87,13 @@ const suggestions = [
         <template #title>
           <span class="text-sm font-medium text-highlighted truncate">New chat</span>
         </template>
-        <ModelPicker />
+        <UButton
+          to="/bridge"
+          icon="i-openlobs-bridge"
+          color="neutral"
+          variant="ghost"
+          aria-label="Bridge: demo, not connected to a computer"
+        />
       </Navbar>
     </template>
 
@@ -143,21 +149,58 @@ const suggestions = [
         </UChatMessages>
 
         <div class="sticky bottom-0 z-10 bg-neutral-50/90 dark:bg-neutral-950/90 backdrop-blur-sm pt-2 pb-[env(safe-area-inset-bottom)]">
-          <UAlert
+          <div
             v-if="errorText"
-            color="error"
-            variant="subtle"
-            icon="i-lucide-circle-alert"
-            title="That did not work"
-            :description="errorText.message"
-            class="mb-2"
-            :actions="[
-              { label: 'Try again', color: 'neutral', variant: 'outline', size: 'xs', onClick: () => regenerate() },
-              { label: 'Models', color: 'neutral', variant: 'ghost', size: 'xs', to: '/models' }
-            ]"
-            close
-            @update:open="(o: boolean) => { if (!o) clearError() }"
-          />
+            class="flex items-start gap-2 px-1 pb-2.5 text-sm"
+            role="alert"
+          >
+            <UIcon
+              name="i-lucide-circle-alert"
+              class="size-4 text-error mt-0.5 shrink-0"
+            />
+            <div class="min-w-0 flex-1">
+              <p class="font-medium text-highlighted">
+                That did not work
+              </p>
+              <p class="text-muted">
+                {{ errorText.message }}
+              </p>
+              <div class="mt-1.5 flex gap-2">
+                <UButton
+                  label="Try again"
+                  size="xs"
+                  color="neutral"
+                  variant="soft"
+                  @click="regenerate()"
+                />
+                <UButton
+                  label="Models"
+                  size="xs"
+                  color="neutral"
+                  variant="ghost"
+                  to="/models"
+                />
+              </div>
+            </div>
+            <UButton
+              icon="i-lucide-x"
+              size="xs"
+              color="neutral"
+              variant="ghost"
+              aria-label="Dismiss"
+              @click="clearError()"
+            />
+          </div>
+          <p
+            v-if="models.selectedInfo.value?.tools === false"
+            class="flex items-center gap-1.5 px-1 pb-1.5 text-xs text-muted"
+          >
+            <UIcon
+              name="i-lucide-wrench"
+              class="size-3.5"
+            />
+            This model cannot use tools, so it will only chat.
+          </p>
           <StatusLine :view="statusView" />
           <UChatPrompt
             v-model="input"
@@ -179,19 +222,7 @@ const suggestions = [
                   size="sm"
                   aria-label="Add files or tools"
                 />
-                <UBadge
-                  icon="i-openlobs-device"
-                  label="Bridge: demo"
-                  color="neutral"
-                  variant="subtle"
-                />
-                <UBadge
-                  v-if="models.selectedInfo.value?.tools === false"
-                  icon="i-lucide-wrench"
-                  label="No tools"
-                  color="warning"
-                  variant="subtle"
-                />
+                <ModelPicker />
               </div>
               <UChatPromptSubmit
                 :status="status"

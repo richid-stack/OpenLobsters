@@ -45,8 +45,8 @@ function addCustom() {
 
         <div class="rounded-xl border border-default bg-elevated/40 p-3.5 flex items-center gap-3">
           <UIcon
-            name="i-lucide-cpu"
-            class="size-5 text-muted shrink-0"
+            :name="m.icon.value"
+            class="size-6 text-highlighted shrink-0"
           />
           <div class="min-w-0 flex-1">
             <p class="text-xs text-muted">

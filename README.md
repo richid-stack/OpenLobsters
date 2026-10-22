@@ -42,7 +42,7 @@ cd apps/mock-server && pip install -r requirements.txt && pytest
 cd apps/web
 npm install
 npm run dev          # http://localhost:3000
-npm test             # 34 tests
+npm test             # 40 tests
 ```
 
 With no setup it uses a built-in **demo model** (scripted answers, sample data, clearly labelled). Try "Summarise my sales and make me a workbook" to see reasoning, tool calls, an approval and a verification check.
@@ -57,6 +57,10 @@ Open **Models** in the app. Pick a provider, paste a key, press **Get models**, 
 - **Capabilities are never guessed.** Where a provider says what a model supports (OpenRouter does), you see it. Otherwise it says "unknown", and **Test** checks tool calling for real. A model that cannot use tools still works as plain chat.
 - **Safety:** model addresses pointing at private networks and cloud-metadata services are refused in production. Set `OPENLOBS_ALLOW_LOCAL_MODELS=1` to allow Ollama on the same machine.
 - **Honest limit:** the OpenAI-compatible path is tested end to end against a local fake provider. The native OpenAI, Anthropic and Google adapters are written but have not yet been run against the real services.
+
+## Logos
+
+Provider and model logos come from [Lobe Icons](https://github.com/lobehub/lobe-icons) (MIT licence) and are bundled into the app, not fetched from the providers' websites, so there are no tracking requests and they work offline. The marks belong to their owners and are used only to show which provider or lab a model comes from.
 
 ## Running the prototype
 

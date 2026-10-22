@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { brandIcon } from '../../../shared/brands'
 import { useModels } from '../../composables/useModels'
 
 const m = useModels()
@@ -28,9 +29,9 @@ function demo() {
     color="neutral"
     variant="soft"
     size="sm"
-    icon="i-lucide-cpu"
-    :label="m.label.value"
-    class="max-w-36 sm:max-w-56"
+    :icon="m.icon.value"
+    :label="m.shortLabel.value"
+    class="max-w-44 sm:max-w-64"
     :ui="{ label: 'truncate' }"
     aria-label="Choose a model"
     @click="open = true"
@@ -77,7 +78,11 @@ function demo() {
           :key="g.def.id"
           class="space-y-1"
         >
-          <p class="text-xs font-medium text-muted px-1">
+          <p class="flex items-center gap-1.5 text-xs font-medium text-muted px-1">
+            <UIcon
+              :name="brandIcon(g.def.id, undefined, 'i-lucide-plug-zap')"
+              class="size-4"
+            />
             {{ g.def.name }}
           </p>
           <button
@@ -87,6 +92,10 @@ function demo() {
             class="w-full flex items-center gap-2 rounded-lg px-3 py-2 text-left hover:bg-elevated/60"
             @click="choose(g.def.id, x.id)"
           >
+            <UIcon
+              :name="brandIcon(g.def.id, x.id)"
+              class="size-5 shrink-0 text-highlighted"
+            />
             <span class="flex-1 min-w-0 text-sm text-highlighted truncate">{{ x.id }}</span>
             <UBadge
               v-if="x.tools === false"
