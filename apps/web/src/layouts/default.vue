@@ -9,6 +9,8 @@ const sidebarOpen = ref(false)
 const nav = [{
   label: 'New chat', to: '/', icon: 'i-lucide-circle-plus'
 }, {
+  label: 'Models', to: '/models', icon: 'i-lucide-cpu'
+}, {
   label: 'Bridge', to: '/bridge', icon: 'i-openlobs-bridge'
 }, {
   label: 'Skills', to: '/skills', icon: 'i-openlobs-skill'

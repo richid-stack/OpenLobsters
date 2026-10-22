@@ -6,12 +6,16 @@ import { DefaultChatTransport, isToolUIPart, lastAssistantMessageIsCompleteWithA
 import Navbar from '../components/Navbar.vue'
 import MessageParts from '../components/chat/MessageParts.vue'
 import StatusLine from '../components/chat/StatusLine.vue'
+import ModelPicker from '../components/models/ModelPicker.vue'
+import { useModels } from '../composables/useModels'
 import { statusFromParts } from '../lib/status'
 
 const input = ref('')
+const models = useModels()
 
-const { messages, status, sendMessage, addToolApprovalResponse, stop, error } = useChat({
-  transport: new DefaultChatTransport({ api: '/api/chat' }),
+const { messages, status, sendMessage, addToolApprovalResponse, stop, error, regenerate, clearError } = useChat({
+  // The chosen model (and its key) is read fresh on every request.
+  transport: new DefaultChatTransport({ api: '/api/chat', body: () => ({ model: models.payload() }) }),
   // After the person answers an approval, the run continues on its own.
   sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithApprovalResponses
 })
@@ -40,7 +44,7 @@ watch(messages, (list) => {
 const statusView = computed(() => {
   const last = messages.value[messages.value.length - 1]
   if (!last) return statusFromParts([], 'ready')
-  if (last.role === 'user') return statusFromParts([], status.value === 'ready' ? 'ready' : 'submitted')
+  if (last.role === 'user') return statusFromParts([], status.value === 'ready' ? 'ready' : status.value === 'error' ? 'error' : 'submitted')
   return statusFromParts(last.parts as never[], status.value)
 })
 
@@ -54,6 +58,16 @@ function submit() {
 function ask(text: string) {
   sendMessage({ text })
 }
+
+// A failed request arrives as JSON text. Show the plain sentence, not the JSON.
+const errorText = computed(() => {
+  const raw = error.value?.message
+  if (!raw) return undefined
+  try {
+    const j = JSON.parse(raw) as { statusText?: string, message?: string, statusMessage?: string }
+    return new Error(j.statusText || j.statusMessage || j.message || raw)
+  } catch { return error.value }
+})
 
 const suggestions = [
   { icon: 'i-lucide-file-spreadsheet', label: 'Summarise my sales and make me a workbook' },
@@ -73,6 +87,7 @@ const suggestions = [
         <template #title>
           <span class="text-sm font-medium text-highlighted truncate">New chat</span>
         </template>
+        <ModelPicker />
       </Navbar>
     </template>
 
@@ -128,10 +143,25 @@ const suggestions = [
         </UChatMessages>
 
         <div class="sticky bottom-0 z-10 bg-neutral-50/90 dark:bg-neutral-950/90 backdrop-blur-sm pt-2 pb-[env(safe-area-inset-bottom)]">
+          <UAlert
+            v-if="errorText"
+            color="error"
+            variant="subtle"
+            icon="i-lucide-circle-alert"
+            title="That did not work"
+            :description="errorText.message"
+            class="mb-2"
+            :actions="[
+              { label: 'Try again', color: 'neutral', variant: 'outline', size: 'xs', onClick: () => regenerate() },
+              { label: 'Models', color: 'neutral', variant: 'ghost', size: 'xs', to: '/models' }
+            ]"
+            close
+            @update:open="(o: boolean) => { if (!o) clearError() }"
+          />
           <StatusLine :view="statusView" />
           <UChatPrompt
             v-model="input"
-            :error="error"
+            :error="errorText"
             color="neutral"
             variant="subtle"
             class="rounded-b-none border-t border-default shadow-[0_-10px_20px_-10px_rgba(0,0,0,0.05)]"
@@ -153,6 +183,13 @@ const suggestions = [
                   icon="i-openlobs-device"
                   label="Bridge: demo"
                   color="neutral"
+                  variant="subtle"
+                />
+                <UBadge
+                  v-if="models.selectedInfo.value?.tools === false"
+                  icon="i-lucide-wrench"
+                  label="No tools"
+                  color="warning"
                   variant="subtle"
                 />
               </div>

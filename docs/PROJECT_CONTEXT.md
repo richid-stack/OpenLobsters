@@ -1,6 +1,6 @@
 # OpenLobs: project context (read this first)
 
-Last updated: 22 Oct 2026. Branch: `feat/vue-shell`. Everything here is true of that branch.
+Last updated: 22 Oct 2026 (second session). Branch: `feat/vue-shell`. Everything here is true of that branch.
 This file exists so any new chat can pick up the work in two minutes. Keep it current: update it at the end of every working session.
 
 ## What we are building
@@ -30,6 +30,11 @@ The product vision, tool registry, Bridge, verification engine, scheduler and bu
 8. **Demo first, real model second.** `server/utils/demoModel.ts` is a stand-in model speaking the same AI SDK protocol, so the UI can be built and reviewed with no keys. Everything it returns is labelled "Demo data" in the UI.
 9. **The person wants screenshots of everything.** Take them with the script described below and show them.
 
+## Read these too
+
+- `docs/FEATURES.md`: the honest status of every feature (the full vision is about 3 to 5% built; a first usable version about 25 to 30%).
+- `README.md`: how to run the app and how Models (bring your own key) works.
+
 ## What exists now (all on `feat/vue-shell`, in `apps/web/`)
 
 - App shell: sidebar layout, light/dark toggle, mobile-first, same structure as `Busin.New`.
@@ -38,7 +43,9 @@ The product vision, tool registry, Bridge, verification engine, scheduler and bu
 - Demo tools (`server/tools/index.ts`): `web_search`, `read_file` (pretends to be the Bridge), `analyze_table`, `create_spreadsheet` (needs approval), `verify_artifact`.
 - Tool metadata for the UI (`shared/toolMeta.ts`): icon, words per state, where it runs (Online / Your computer / Sandbox), risk (read / write), approval phrase.
 - Pages `/icons` (the icon sheet), and placeholders `/bridge`, `/skills`, `/teams`.
-- Tests: 15 passing (`npm test`): the demo model's step logic and the status line.
+- **Models (bring your own key):** `shared/providers.ts` (catalog of 14 providers plus custom OpenAI-compatible endpoints), `server/providers/` (`registry.ts` builds a model from a selection, `models.ts` fetches and normalises model lists, `netGuard.ts` blocks dangerous addresses, `redact.ts` strips keys from errors), routes `GET /api/providers`, `POST /api/providers/models`, `POST /api/providers/test`, and `POST /api/chat` accepting a `model` selection. App side: `src/composables/useModels.ts` (keys and selection in browser localStorage), `src/pages/models.vue`, `src/components/models/`.
+- Decisions for Models: keys live in the browser and travel in each request body, never stored by the server; self-hosters can use `OPENLOBS_<PROVIDER>_API_KEY` env vars (see `.env.example`); capabilities are never guessed (OpenRouter's list is used, everything else is "unknown" until the Test button checks tool calling); a model without tools still works as plain chat; custom addresses are guarded against SSRF, and cloud-metadata/link-local addresses are always blocked.
+- Tests: 34 passing (`npm test`): demo model, status line, providers and the network guard. `tests/mockOpenAI.mts` is a fake OpenAI-compatible server (run it with `npx tsx tests/runMock.mts`, key `test-key`, `http://127.0.0.1:4010/v1`) used for tests and screenshots.
 - Typechecks clean: `npm run typecheck` and `npm run typecheck:server`.
 
 ### Try it
@@ -54,7 +61,9 @@ Say: "Summarise my sales and make me a workbook". Watch reasoning, three tool ca
 
 ## What is NOT real yet (be honest about this)
 
-- No real model. The demo model follows a script chosen by keywords in the message.
+- **The native OpenAI, Anthropic and Google adapters have never been run against the real services.** Only the OpenAI-compatible path was tested, against a fake server. The first thing to do with a real key is test each provider and fix what breaks.
+- The demo model (the default when no model is chosen) follows a script chosen by keywords in the message.
+- No usage or cost tracking, no provider fallback, no encrypted server-side key storage.
 - No accounts, no database, no saved chats. Reloading loses the conversation.
 - No Bridge. `read_file` and `create_spreadsheet` are pretend; nothing touches a real computer or file.
 - Verification is simulated. The checks always pass. Real verification (re-open the workbook, check totals) is a later phase.
@@ -63,7 +72,7 @@ Say: "Summarise my sales and make me a workbook". Watch reasoning, three tool ca
 
 ## Next steps, in order
 
-1. **Real model switch.** If a provider key is present, use the real provider in `chat.post.ts`; otherwise the demo model. Nothing above the model changes.
+1. **Try real providers.** Ask the owner to test with a real key (preferably on their own machine so the key is not pasted into chat) or give a key scoped and limited. Test OpenRouter, then each native adapter, and fix what breaks.
 2. **Task and tool registry.** A task has a goal, success criteria, budget and status. Tools get registry entries (schemas, risk, where they run, health). Wrap the existing tools.
 3. **Real verification for one artifact.** Generate a real `.xlsx` server-side and verify it by opening it again. Then the "Excel report" demo works end to end without any Bridge.
 4. **Artifact storage** (object storage, not database rows) so large outputs are possible.
@@ -85,6 +94,14 @@ Say: "Summarise my sales and make me a workbook". Watch reasoning, three tool ca
 - They want screenshots of every visual change. They also want honest reporting: say what is demo, what is real, what failed.
 - One question at a time, and only when really needed.
 - Do not push to `main`. Work on a branch and tell them the branch name.
+
+## Bugs found by looking and testing (so they are not repeated)
+
+- A chip said "Created the workbook" while the file was still waiting for approval. Chips must never claim an action before it happened.
+- After a failed request the status line stayed on "Getting started" and the error text never showed. Errors now show with Try again and a link to Models.
+- The network guard let a request through to the cloud-metadata address in development mode, and an IPv6-mapped form (`::ffff:a9fe:a9fe`, which is what URL parsing produces) slipped past the first fix. Both are fixed and tested.
+- `docs` once said 44 tests when the count was 34: always count from the real test output.
+- The dev server can stop when packages are installed. Check it before taking screenshots.
 
 ## Practical notes for the next session (tooling)
 

@@ -15,6 +15,8 @@ export interface StatusView {
   line: string
   live: boolean
   waiting: boolean
+  /** The request failed before anything came back. */
+  failed?: boolean
   chips: Chip[]
 }
 
@@ -47,6 +49,11 @@ export function statusFromParts(parts: AnyPart[], chatStatus: 'submitted' | 'str
     }
   })
 
+  // A request that failed before anything came back must not look like it is still starting.
+  if (chatStatus === 'error' && parts.length === 0) {
+    return { line: 'The request failed', live: false, waiting: false, failed: true, chips }
+  }
+
   if (chatStatus === 'submitted' && parts.length === 0) {
     return { line: 'Getting started', live: true, waiting: false, chips }
   }
@@ -62,7 +69,7 @@ export function statusFromParts(parts: AnyPart[], chatStatus: 'submitted' | 'str
 
   if (chatStatus === 'ready' || chatStatus === 'error') {
     const tools = parts.filter(isTool).length
-    return { line: tools ? `Worked with ${tools} ${tools === 1 ? 'tool' : 'tools'}` : '', live: false, waiting: false, chips }
+    return { line: tools ? `Worked with ${tools} ${tools === 1 ? 'tool' : 'tools'}` : 'Done', live: false, waiting: false, chips }
   }
 
   if (last.type === 'reasoning') return { line: 'Thinking it through', live: true, waiting: false, chips }

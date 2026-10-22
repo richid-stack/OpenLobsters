@@ -35,7 +35,12 @@ const chipClass = (state: string) => ({
       class="ol-line-in flex items-center gap-2 text-sm min-h-5"
     >
       <UIcon
-        v-if="view.waiting"
+        v-if="view.failed"
+        name="i-lucide-circle-alert"
+        class="size-4 shrink-0 text-error"
+      />
+      <UIcon
+        v-else-if="view.waiting"
         name="i-openlobs-approval"
         class="size-4 shrink-0 text-warning"
       />
@@ -55,7 +60,7 @@ const chipClass = (state: string) => ({
       />
       <span
         v-else
-        :class="view.waiting ? 'text-warning-700 dark:text-warning-400 font-medium' : 'text-muted'"
+        :class="view.failed ? 'text-error' : view.waiting ? 'text-warning-700 dark:text-warning-400 font-medium' : 'text-muted'"
       >{{ view.line }}</span>
     </div>
 

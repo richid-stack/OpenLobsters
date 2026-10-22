@@ -1,5 +1,7 @@
 # OpenLobsters: phased plan (draft for approval)
 
+> **Update, 22 Oct 2026.** The web app and its API were built as one Vue 3 + Nitro project (`apps/web`) with the AI SDK, replacing the Next.js and FastAPI stack named below. Phases 3 and 5 should be read with that in mind. Open question: the event contract in `packages/contract` is not the AI SDK's stream format, so one has to be mapped to the other. See `docs/FEATURES.md` for what is built and `docs/PROJECT_CONTEXT.md` for decisions.
+
 Status: **approved 2026-10-18. Decisions are recorded in `DECISIONS.md`. Session A (Phase 0 and Phase 1) is built.**
 Source documents: `blueprint-1-platform.md` (ten systems, build order) and `blueprint-2-ecosystem.md` (Discover, Compose, Create).
 

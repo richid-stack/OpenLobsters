@@ -10,11 +10,16 @@
     "icons": "node scripts/build-icons.mjs",
     "typecheck": "vue-tsc -p ./tsconfig.app.json",
     "typecheck:server": "tsc -p tsconfig.server.json",
-    "test": "tsx tests/demoModel.test.mts && tsx tests/status.test.mts"
+    "test": "tsx tests/demoModel.test.mts && tsx tests/status.test.mts && tsx tests/providers.test.mts"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^4.0.85",
+    "@ai-sdk/google": "^4.0.102",
+    "@ai-sdk/openai": "^4.0.99",
+    "@ai-sdk/openai-compatible": "^3.0.75",
     "@ai-sdk/vue": "^4.0.93",
     "@comark/vue": "^0.6.2",
+    "@fontsource/public-sans": "^5.2.6",
     "@iconify/vue": "^5.0.1",
     "@nuxt/ui": "^4.11.0",
     "@shikijs/langs": "^4.4.3",
@@ -26,8 +31,7 @@
     "tailwindcss": "^4.3.3",
     "vue": "^3.5.42",
     "vue-router": "^5.3.1",
-    "zod": "^4.5.4",
-    "@fontsource/public-sans": "^5.2.6"
+    "zod": "^4.5.4"
   },
   "devDependencies": {
     "@iconify-json/lucide": "^1.2.145",

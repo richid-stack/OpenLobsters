@@ -60,4 +60,15 @@ test('a chip never claims an action happened before it did', () => {
   assert.equal(denied.label, 'Workbook not created')
 })
 
+test('a failed request does not stay on getting started', () => {
+  const s = statusFromParts([], 'error')
+  assert.equal(s.line, 'The request failed')
+  assert.equal(s.live, false)
+})
+
+test('a reply that used no tools still says it is done', () => {
+  const s = statusFromParts([{ type: 'reasoning', state: 'done' }, { type: 'text', state: 'done' }], 'ready')
+  assert.equal(s.line, 'Done')
+})
+
 console.log(`\n${passed} passed`)
