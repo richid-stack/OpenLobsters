@@ -1,0 +1,42 @@
+@import "tailwindcss" theme(static);
+@import "@nuxt/ui";
+@import "@fontsource/public-sans/400.css";
+@import "@fontsource/public-sans/500.css";
+@import "@fontsource/public-sans/600.css";
+@import "@fontsource/public-sans/700.css";
+
+@theme static {
+  --font-sans: 'Public Sans', ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  html, body {
+    margin: 0; padding: 0; width: 100vw; height: 100vh; min-height: 100dvh; overflow: hidden;
+    @apply bg-neutral-50 dark:bg-neutral-950;
+  }
+  #app { margin: 0; padding: 0; width: 100vw; height: 100vh; min-height: 100dvh; overflow: hidden; }
+}
+
+:root { --ui-container: var(--container-3xl); }
+
+html.dark .shiki span {
+  color: var(--shiki-dark) !important;
+  background-color: var(--shiki-dark-bg) !important;
+  font-style: var(--shiki-dark-font-style) !important;
+  font-weight: var(--shiki-dark-font-weight) !important;
+  text-decoration: var(--shiki-dark-text-decoration) !important;
+}
+
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
+/* Live status line: swap in and pulse. Transforms and opacity only. */
+@keyframes ol-line-in { from { opacity: 0; transform: translateY(6px) } to { opacity: 1; transform: translateY(0) } }
+@keyframes ol-chip-in { from { opacity: 0; transform: scale(.85) } to { opacity: 1; transform: scale(1) } }
+@keyframes ol-pulse { 0%, 100% { opacity: 1 } 50% { opacity: .45 } }
+.ol-line-in { animation: ol-line-in 220ms ease-out both }
+.ol-chip-in { animation: ol-chip-in 180ms ease-out both }
+.ol-pulse { animation: ol-pulse 1.4s ease-in-out infinite }
+@media (prefers-reduced-motion: reduce) {
+  .ol-line-in, .ol-chip-in, .ol-pulse { animation: none }
+}

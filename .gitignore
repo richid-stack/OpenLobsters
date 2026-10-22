@@ -1,0 +1,12 @@
+node_modules/
+.output/
+.nitro/
+.vite/
+dist/
+*.log
+.DS_Store
+.env
+.env.*
+!.env.example
+apps/web/src/route-map.d.ts
+apps/web/shots/

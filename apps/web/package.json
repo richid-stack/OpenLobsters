@@ -1,0 +1,42 @@
+{
+  "name": "@openlobs/web",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0 --port 3000",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0 --port 3000",
+    "icons": "node scripts/build-icons.mjs",
+    "typecheck": "vue-tsc -p ./tsconfig.app.json",
+    "typecheck:server": "tsc -p tsconfig.server.json",
+    "test": "tsx tests/demoModel.test.mts && tsx tests/status.test.mts"
+  },
+  "dependencies": {
+    "@ai-sdk/vue": "^4.0.93",
+    "@comark/vue": "^0.6.2",
+    "@iconify/vue": "^5.0.1",
+    "@nuxt/ui": "^4.11.0",
+    "@shikijs/langs": "^4.4.3",
+    "@unhead/vue": "^3.4.0",
+    "@vueuse/core": "^14.4.0",
+    "ai": "^7.0.93",
+    "nitro": "^3.0.260311-beta",
+    "shiki": "^4.4.3",
+    "tailwindcss": "^4.3.3",
+    "vue": "^3.5.42",
+    "vue-router": "^5.3.1",
+    "zod": "^4.5.4",
+    "@fontsource/public-sans": "^5.2.6"
+  },
+  "devDependencies": {
+    "@iconify-json/lucide": "^1.2.145",
+    "@types/node": "^24.13.3",
+    "@vitejs/plugin-vue": "^6.0.8",
+    "tsx": "^4.23.15",
+    "typescript": "^6.0.3",
+    "vite": "^8.2.2",
+    "vite-plugin-vue-layouts": "^0.11.0",
+    "vue-tsc": "^3.3.11"
+  }
+}
