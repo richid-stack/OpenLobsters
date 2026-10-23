@@ -45,7 +45,7 @@ The product vision, tool registry, Bridge, verification engine, scheduler and bu
 - Pages `/icons` (the icon sheet), and placeholders `/bridge`, `/skills`, `/teams`.
 - **Models (bring your own key):** `shared/providers.ts` (catalog of 14 providers plus custom OpenAI-compatible endpoints), `server/providers/` (`registry.ts` builds a model from a selection, `models.ts` fetches and normalises model lists, `netGuard.ts` blocks dangerous addresses, `redact.ts` strips keys from errors), routes `GET /api/providers`, `POST /api/providers/models`, `POST /api/providers/test`, and `POST /api/chat` accepting a `model` selection. App side: `src/composables/useModels.ts` (keys and selection in browser localStorage), `src/pages/models.vue`, `src/components/models/`.
 - Decisions for Models: keys live in the browser and travel in each request body, never stored by the server; self-hosters can use `OPENLOBS_<PROVIDER>_API_KEY` env vars (see `.env.example`); capabilities are never guessed (OpenRouter's list is used, everything else is "unknown" until the Test button checks tool calling); a model without tools still works as plain chat; custom addresses are guarded against SSRF, and cloud-metadata/link-local addresses are always blocked.
-- Tests: 40 passing (`npm test`): demo model, status line, providers and the network guard. `tests/mockOpenAI.mts` is a fake OpenAI-compatible server (run it with `npx tsx tests/runMock.mts`, key `test-key`, `http://127.0.0.1:4010/v1`) used for tests and screenshots.
+- Tests: 61 passing (`npm test`): demo model, status line, providers, network guard, brand icons, chat store, rate limiter, accounts. `tests/mockOpenAI.mts` is a fake OpenAI-compatible server (`npx tsx tests/runMock.mts`, key `test-key`, `http://127.0.0.1:4010/v1`); `tests/runMockIdp.mts` is a fake OpenID Connect provider on `:4020`.
 - Typechecks clean: `npm run typecheck` and `npm run typecheck:server`.
 
 ### Try it
@@ -65,12 +65,22 @@ Say: "Summarise my sales and make me a workbook". Watch reasoning, three tool ca
 - **Model picker sits in the message box** (next to the + button, so a thumb reaches it). The Bridge status is an icon in the top bar.
 - **Real brand logos** for providers and labs (`shared/brands.ts`, Lobe Icons, MIT, bundled by `scripts/build-icons.mjs`). A model shows its lab's logo (a Claude model through OpenRouter shows Claude), then the provider's logo, then a generic icon. Colour versions only where they stay readable in dark mode.
 
+### Accounts and saved chats (second session, part 2)
+
+- Better Auth 1.7 + SQLite (`better-sqlite3`). Server: `server/auth/` (`config.ts` env to config, `auth.ts` factory and migrations, `mailer.ts` SMTP, `session.ts`), `server/chats/store.ts` (ChatStore interface, SQLite implementation, primary key `(user_id, id)` so ids cannot collide or be guessed across people), `server/utils/rateLimit.ts` and `limits.ts`, routes `/api/auth/*`, `/api/auth-config`, `/api/chats`, `/api/chats/:id` (GET, PATCH, DELETE). `POST /api/chat` accepts an `id`, optionally knows the signed-in user, rate-limits, and saves the finished conversation in `onEnd`.
+- App: `src/lib/auth.ts`, `src/pages/sign-in.vue` (+ forgot/reset password), `src/components/auth/UserMenu.vue`, `src/components/chat/ChatHistory.vue`, `ChatView.vue` (one conversation), `pages/chat/[id].vue`, composables `useChats`, `useAuthConfig`.
+- Signed-out use stays possible (nothing saved). After the first reply of a signed-in chat the address becomes `/chat/<id>`, except while an approval is waiting.
+- Generic OpenID Connect providers in Better Auth 1.7 sign in through the **social** route (`signIn.social({ provider: id })`, callback `/api/auth/callback/<id>`), and are discovered at server start.
+- **Rule for the tool registry phase:** the client sends the whole message history, including tool results and approvals. Never trust those for anything with side effects. Approvals and tool runs must be recorded and checked on the server, or a person could forge an approval in their own request.
+- Known gaps: rename is not in the UI; no account deletion or data export; no two-factor or passkeys; the rate limiter is in-memory (one process); stored chats are one JSON record each.
+- Design proposals (not built): `docs/DESIGN_NOTES.md` (the area above the message box becomes one line plus a tray of steps that jump to the step).
+
 ## What is NOT real yet (be honest about this)
 
 - **The native OpenAI, Anthropic and Google adapters have never been run against the real services.** Only the OpenAI-compatible path was tested, against a fake server. The first thing to do with a real key is test each provider and fix what breaks.
 - The demo model (the default when no model is chosen) follows a script chosen by keywords in the message.
 - No usage or cost tracking, no provider fallback, no encrypted server-side key storage.
-- No accounts, no database, no saved chats. Reloading loses the conversation.
+- GitHub, Google and Microsoft sign-in are configured but never run against the real services.
 - No Bridge. `read_file` and `create_spreadsheet` are pretend; nothing touches a real computer or file.
 - Verification is simulated. The checks always pass. Real verification (re-open the workbook, check totals) is a later phase.
 - "Always allow" lasts for one page session only.
@@ -82,7 +92,7 @@ Say: "Summarise my sales and make me a workbook". Watch reasoning, three tool ca
 2. **Task and tool registry.** A task has a goal, success criteria, budget and status. Tools get registry entries (schemas, risk, where they run, health). Wrap the existing tools.
 3. **Real verification for one artifact.** Generate a real `.xlsx` server-side and verify it by opening it again. Then the "Excel report" demo works end to end without any Bridge.
 4. **Artifact storage** (object storage, not database rows) so large outputs are possible.
-5. **Persistence and auth.**
+5. (Done) Persistence and auth. Next in this area: rename in the UI, account deletion, passkeys, two-factor.
 6. **Bridge prototype.** Pairing, an outbound connection from the person's computer, a harmless test task, cancel and revoke. Assumed Windows first (not confirmed with the owner).
 7. **First local adapter** (Excel on Windows), then Blender.
 8. **Canvas.** Bridge and Verify nodes in a workflow editor, scheduling, then the ecosystem features (Discover, Skills Studio).
@@ -102,6 +112,9 @@ Say: "Summarise my sales and make me a workbook". Watch reasoning, three tool ca
 - Do not push to `main`. Work on a branch and tell them the branch name.
 
 ## Bugs found by looking and testing (so they are not repeated)
+
+- Background servers: starting a second dev server while an old one is running silently moves it to another port, and deleting the SQLite file under a running server breaks it. Kill old servers first (`pkill -f '[v]ite --host'`) then delete `data/`. Run servers and the browser test in one command; `/tmp/run_all.sh` style scripts help.
+- Playwright `text=...` picks the first match even if hidden; use `text=... >> visible=true`.
 
 - A chip said "Created the workbook" while the file was still waiting for approval. Chips must never claim an action before it happened.
 - After a failed request the status line stayed on "Getting started" and the error text never showed. Errors now show with Try again and a link to Models.

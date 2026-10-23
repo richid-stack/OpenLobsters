@@ -42,10 +42,21 @@ cd apps/mock-server && pip install -r requirements.txt && pytest
 cd apps/web
 npm install
 npm run dev          # http://localhost:3000
-npm test             # 40 tests
+npm test             # 61 tests
 ```
 
 With no setup it uses a built-in **demo model** (scripted answers, sample data, clearly labelled). Try "Summarise my sales and make me a workbook" to see reasoning, tool calls, an approval and a verification check.
+
+## Accounts and saved chats
+
+Anyone can try OpenLobs without an account (nothing is saved). Signing in saves your chats so you can reopen them on any device.
+
+- **Sign-in methods:** email and password, GitHub, Google, Microsoft, and any OpenID Connect provider (Keycloak, Okta, Auth0, Entra ID, a company login). A button appears only for a method that is configured. See `apps/web/.env.example`.
+- **Self-hosting:** accounts and chats live in one SQLite file (`data/openlobs.db`), no database setup needed. Set `BETTER_AUTH_SECRET` and `OPENLOBS_BASE_URL` for production. `OPENLOBS_SIGNUPS=closed` stops new registrations.
+- **Email:** confirmation and password reset need an SMTP address (`OPENLOBS_SMTP_URL`). Without one, nothing is emailed, confirmation is not required and "forgot password" is hidden.
+- **Privacy:** a person can only ever see their own chats (enforced on every query, tested). Model keys are still kept in the browser, not on the server.
+- **First start:** you may see a harmless "schema mismatch" message from the auth library while it creates its tables.
+- **Honest limits:** GitHub, Google and Microsoft are configured but have not been run against the real services (no access from the build environment). The OpenID Connect path is tested end to end against a fake provider, in tests and in a real browser. If the identity provider is down when the server starts, its button is skipped until the server restarts.
 
 ## Bring your own model
 

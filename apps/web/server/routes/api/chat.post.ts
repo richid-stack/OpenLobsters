@@ -7,6 +7,11 @@ import { tools } from '../../tools'
 import { createDemoModel } from '../../utils/demoModel'
 import { modelSelectionSchema } from '../../utils/modelSelection'
 import { redactSecrets } from '../../providers/redact'
+import { getSessionUser } from '../../auth/session'
+import { getChatStore } from '../../chats'
+import { CHAT_ID_PATTERN } from '../../chats/store'
+import { chatLimiter } from '../../utils/limits'
+import { clientKey, enforce } from '../../utils/rateLimit'
 import { ProviderError, resolveModel } from '../../providers/registry'
 
 const INSTRUCTIONS = `You are OpenLobs, an assistant that does real work and shows how.
@@ -18,10 +23,16 @@ const INSTRUCTIONS = `You are OpenLobs, an assistant that does real work and sho
 export default defineHandler(async (event) => {
   const body = await readValidatedBody(event, z.object({
     messages: z.array(z.custom<UIMessage>()),
+    // Which saved chat this belongs to. Only used when signed in.
+    id: z.string().regex(CHAT_ID_PATTERN).optional(),
     // Which model to use. Absent means the built-in demo model.
     model: modelSelectionSchema.optional()
   }).parse)
   const { messages } = body
+
+  // Signed in: saved to the account. Signed out: works, but nothing is kept.
+  const user = await getSessionUser(event)
+  enforce(chatLimiter, clientKey(event, user?.id))
 
   let resolved: Awaited<ReturnType<typeof resolveModel>> | null = null
   if (body.model) {
@@ -38,6 +49,12 @@ export default defineHandler(async (event) => {
 
   const stream = createUIMessageStream({
     originalMessages: messages,
+    // Save the finished conversation (including a stopped one) for signed-in people. A failure to save must
+    // never break the answer they are already reading.
+    onEnd: async ({ messages: finished }) => {
+      if (!user || !body.id || !finished.length) return
+      try { (await getChatStore()).save(user.id, body.id, finished) } catch (e) { console.error('Could not save chat:', (e as Error).message) }
+    },
     // Errors from a provider can echo parts of the request. Strip any key before it reaches the browser.
     onError: error => redactSecrets(error instanceof Error ? error.message : 'The model request failed.', secrets),
     execute: async ({ writer }) => {

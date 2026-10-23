@@ -23,7 +23,7 @@ Status words: **Real** = works and is tested. **Partial** = real but limited, li
 | 6 | Agent orchestration | Not started | One run loop with a step limit. No teams, hand-offs, router or scheduling. |
 | 7 | **Model connectors** | **Partial, real** | See below. The most complete system so far. |
 | 8 | Validation and evaluation | Demo | Verification checks show on screen, but the checks are simulated and always pass. No evaluation harness. |
-| 9 | Security and permissions | Partial | Approvals enforced by the runtime, a guard against dangerous model addresses, keys removed from errors. **No** accounts, audit log, execution isolation or secret vault. |
+| 9 | Security and permissions | Partial | Approvals enforced by the runtime, accounts and per-person data, rate limiting, a guard against dangerous model addresses, keys removed from errors. **No** audit log, execution isolation, secret vault, two-factor or roles. |
 | 10 | Runtime management | Not started | |
 
 ### System 7 in detail (model connectors)
@@ -59,20 +59,21 @@ Discover, Build, Lab, Compose, Skills Studio, Forge, Intelligence, Benchmark, Gr
 | Errors shown with Try again | Real | |
 | Light and dark, mobile first | Real | |
 | Custom icons and brand mark | Real | |
-| Accounts and sign-in | Not started | |
-| Saved chats and projects | Not started | Reloading loses the conversation. |
+| Accounts and sign-in | **Partial, real** | Email and password, GitHub, Google, Microsoft and any OpenID Connect provider. Sessions, sign-out, password reset and email confirmation (when email is configured), closed sign-ups. Tested: email flows and the OpenID Connect path (fake provider, in a browser). **Not run against real GitHub, Google or Microsoft.** No two-factor, passkeys, account deletion or profile page yet. |
+| Saved chats | **Real** | Per-person, tested for isolation. History in the sidebar, rename and delete (rename is in the API, not yet in the UI). Whole chat is stored as one record; fine for now, will need per-message storage later. |
+| Projects, folders, sharing | Not started | |
 | Memory | Not started | |
 | File uploads | Not started | |
 | The Bridge (work on your own computer) | Not started | `read_file` and `create_spreadsheet` are pretend. |
 | Real verification of outputs | Not started | |
 | Artifact storage | Not started | |
 | Billing, teams, sharing | Not started | |
-| Tests | 40 passing | Demo model, status line, providers, the network guard and brand icons. |
+| Tests | 61 passing | Demo model, status line, providers, network guard, brand icons, chat store, rate limiter and accounts. |
 
 ## What the first usable version still needs, in order
 
-1. Test the native providers with a real key, and fix whatever breaks.
-2. Saved chats and sign-in.
+1. Test the native providers with a real key, and fix whatever breaks. Test GitHub and Google sign-in with real app credentials.
+2. (Done) Saved chats and sign-in.
 3. One real tool end to end, with a real file output that is verified by opening it again.
 4. A task model and a tool registry (permissions per tool, not per prompt).
 5. Artifact storage.

@@ -7,7 +7,7 @@
 // (they follow the text colour) are used where the colour version fades into a dark background.
 
 export const BRAND_ICON_NAMES = [
-  'openrouter-color', 'openai', 'anthropic', 'claude-color', 'google-color', 'gemini-color', 'gemma',
+  'openrouter-color', 'github', 'openai', 'anthropic', 'claude-color', 'google-color', 'gemini-color', 'gemma',
   'groq', 'mistral-color', 'deepseek-color', 'xai', 'grok', 'together-color', 'fireworks', 'cerebras-color',
   'deepinfra', 'ollama', 'lmstudio', 'meta-color', 'qwen-color', 'cohere-color', 'microsoft-color',
   'nvidia-color', 'perplexity-color', 'moonshot', 'zhipu-color', 'minimax-color', 'nousresearch', 'ai21',

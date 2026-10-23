@@ -1,5 +1,8 @@
 import { generateText, isStepCount, tool } from 'ai'
 import { defineHandler } from 'nitro'
+import { getSessionUser } from '../../../auth/session'
+import { providerLimiter } from '../../../utils/limits'
+import { clientKey, enforce } from '../../../utils/rateLimit'
 import { readValidatedBody } from 'nitro/h3'
 import { z } from 'zod'
 import { redactSecrets } from '../../../providers/redact'
@@ -9,6 +12,7 @@ import { modelSelectionSchema } from '../../../utils/modelSelection'
 // Connection test. Does two real calls: a plain answer, then a tool call. The tool call matters because
 // providers differ, and "supports tools" is the thing the rest of OpenLobs depends on.
 export default defineHandler(async (event) => {
+  enforce(providerLimiter, clientKey(event, (await getSessionUser(event))?.id))
   const sel = await readValidatedBody(event, modelSelectionSchema.parse)
   const started = Date.now()
   let secrets: string[] = []

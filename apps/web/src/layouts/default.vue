@@ -2,12 +2,16 @@
 import LobMark from '../components/brand/LobMark.vue'
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
+import UserMenu from '../components/auth/UserMenu.vue'
+import ChatHistory from '../components/chat/ChatHistory.vue'
+import { useChats } from '../composables/useChats'
 
 const route = useRoute()
 const sidebarOpen = ref(false)
+const chats = useChats()
 
 const nav = [{
-  label: 'New chat', to: '/', icon: 'i-lucide-circle-plus'
+  label: 'New chat', to: '/', icon: 'i-lucide-circle-plus', onSelect: () => { chats.newChat(); sidebarOpen.value = false }
 }, {
   label: 'Models', to: '/models', icon: 'i-lucide-cpu'
 }, {
@@ -52,16 +56,11 @@ const nav = [{
           :collapsed="collapsed"
           orientation="vertical"
         />
+        <ChatHistory v-if="!collapsed" />
       </template>
 
       <template #footer="{ collapsed }">
-        <UButton
-          :label="collapsed ? '' : 'Richid-stack'"
-          icon="i-lucide-user-round"
-          color="neutral"
-          variant="ghost"
-          class="w-full"
-        />
+        <UserMenu :collapsed="collapsed" />
       </template>
     </UDashboardSidebar>
 

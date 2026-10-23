@@ -1,4 +1,7 @@
 import { defineHandler } from 'nitro'
+import { getSessionUser } from '../../../auth/session'
+import { providerLimiter } from '../../../utils/limits'
+import { clientKey, enforce } from '../../../utils/rateLimit'
 import { createError, readValidatedBody } from 'nitro/h3'
 import { z } from 'zod'
 import { getProviderDef } from '../../../../shared/providers'
@@ -9,6 +12,7 @@ import { redactSecrets } from '../../../providers/redact'
 import { resolveKey } from '../../../providers/registry'
 
 export default defineHandler(async (event) => {
+  enforce(providerLimiter, clientKey(event, (await getSessionUser(event))?.id))
   const body = await readValidatedBody(event, z.object({
     providerId: z.string().min(1).max(80),
     apiKey: z.string().max(500).optional(),
