@@ -42,7 +42,7 @@ cd apps/mock-server && pip install -r requirements.txt && pytest
 cd apps/web
 npm install
 npm run dev          # http://localhost:3000
-npm test             # 61 tests
+npm test             # 66 tests
 ```
 
 With no setup it uses a built-in **demo model** (scripted answers, sample data, clearly labelled). Try "Summarise my sales and make me a workbook" to see reasoning, tool calls, an approval and a verification check.

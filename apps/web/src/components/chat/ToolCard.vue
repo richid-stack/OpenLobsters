@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { isToolStreaming } from '@nuxt/ui/utils/ai'
 import { toolMeta, LOCATION_LABEL } from '../../../shared/toolMeta'
+import { toolSubject } from '../../lib/status'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const props = defineProps<{ part: any }>()
@@ -26,11 +27,7 @@ const text = computed(() => {
 
 const icon = computed(() => waiting.value ? 'i-openlobs-approval' : denied.value ? 'i-lucide-ban' : failed.value ? 'i-lucide-triangle-alert' : meta.value.icon)
 
-const suffix = computed(() => {
-  const i = props.part.input as Record<string, unknown> | undefined
-  const v = i?.filename ?? i?.path ?? i?.query ?? i?.file ?? i?.task
-  return typeof v === 'string' ? v.slice(0, 44) : undefined
-})
+const suffix = computed(() => toolSubject(props.part.input))
 const why = computed(() => {
   const w = (props.part.input as Record<string, unknown> | undefined)?.why
   return typeof w === 'string' ? w : ''

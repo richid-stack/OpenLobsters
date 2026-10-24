@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import LobMark from '../brand/LobMark.vue'
-import { computed, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useChat } from '@ai-sdk/vue'
 import type { UIMessage } from 'ai'
 import { useRoute, useRouter } from 'vue-router'
@@ -23,6 +23,31 @@ const chats = useChats()
 
 const input = ref('')
 const models = useModels()
+const statusLine = ref<InstanceType<typeof StatusLine> | null>(null)
+
+// "Back to the latest": shown when the person has scrolled up, attached just above the message box so it can
+// never hide behind it. Scroll events do not bubble, so listen on the whole document while capturing, and
+// recognise the scrolling container as the one that contains the message box. This does not depend on how
+// the page is laid out, or on the container existing yet when the page loads.
+const composer = ref<HTMLElement | null>(null)
+const awayFromBottom = ref(false)
+let scroller: HTMLElement | null = null
+function updateAway() {
+  if (scroller) awayFromBottom.value = scroller.scrollHeight - scroller.scrollTop - scroller.clientHeight > 160
+}
+function onAnyScroll(e: Event) {
+  const t = e.target
+  if (!(t instanceof HTMLElement) || !composer.value || !t.contains(composer.value)) return
+  scroller = t
+  updateAway()
+}
+function toBottom() {
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  scroller?.scrollTo({ top: scroller.scrollHeight, behavior: reduce ? 'auto' : 'smooth' })
+}
+onMounted(() => document.addEventListener('scroll', onAnyScroll, { capture: true, passive: true }))
+onBeforeUnmount(() => document.removeEventListener('scroll', onAnyScroll, { capture: true }))
+
 
 const { messages, status, sendMessage, addToolApprovalResponse, stop, error, regenerate, clearError } = useChat({
   // The chosen model (and its key) is read fresh on every request.
@@ -68,6 +93,30 @@ watch(status, (now, before) => {
   }
 })
 
+// The assistant message the status line and tray describe: the latest one.
+const lastAssistantId = computed(() => {
+  const last = messages.value[messages.value.length - 1]
+  return last?.role === 'assistant' ? last.id : undefined
+})
+
+// Take the person to a step in the conversation and tint it for a moment so the eye finds it.
+async function jumpTo(anchor: string) {
+  await nextTick()
+  const el = document.getElementById(anchor)
+  if (!el) return
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  // A tall step (a long reasoning block) is shown from its top; a short one is centred.
+  const tall = el.getBoundingClientRect().height > window.innerHeight * 0.55
+  el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: tall ? 'start' : 'center' })
+  el.classList.remove('ol-flash')
+  void el.offsetWidth // restart the animation if it was already running
+  el.classList.add('ol-flash')
+  el.focus({ preventScroll: true })
+  window.setTimeout(() => el.classList.remove('ol-flash'), 1800)
+}
+
+watch(() => messages.value.length, async () => { await nextTick(); updateAway() })
+
 const statusView = computed(() => {
   const last = messages.value[messages.value.length - 1]
   if (!last) return statusFromParts([], 'ready')
@@ -78,11 +127,13 @@ const statusView = computed(() => {
 function submit() {
   const text = input.value.trim()
   if (!text) return
+  statusLine.value?.close()
   sendMessage({ text })
   input.value = ''
 }
 
 function ask(text: string) {
+  statusLine.value?.close()
   sendMessage({ text })
 }
 
@@ -162,6 +213,7 @@ const suggestions = [
           :messages="messages"
           :status="(status === 'streaming' && messages[messages.length - 1]?.role === 'user') ? 'submitted' : status"
           :spacing-offset="200"
+          :auto-scroll="false"
           class="pt-(--ui-header-height) pb-4 sm:pb-6"
         >
           <template #indicator>
@@ -175,7 +227,20 @@ const suggestions = [
           </template>
         </UChatMessages>
 
-        <div class="sticky bottom-0 z-10 bg-neutral-50/90 dark:bg-neutral-950/90 backdrop-blur-sm pt-2 pb-[env(safe-area-inset-bottom)]">
+        <div ref="composer"
+        class="sticky bottom-0 z-10 bg-neutral-50/90 dark:bg-neutral-950/90 backdrop-blur-sm pt-2 pb-[env(safe-area-inset-bottom)]">
+          <Transition name="ol-fade">
+            <UButton
+              v-if="awayFromBottom"
+              icon="i-lucide-arrow-down"
+              color="neutral"
+              variant="soft"
+              size="md"
+              class="absolute bottom-full left-1/2 mb-2 -translate-x-1/2 rounded-full bg-elevated shadow-md"
+              aria-label="Scroll to bottom"
+              @click="toBottom"
+            />
+          </Transition>
           <div
             v-if="errorText"
             class="flex items-start gap-2 px-1 pb-2.5 text-sm"
@@ -228,7 +293,12 @@ const suggestions = [
             />
             This model cannot use tools, so it will only chat.
           </p>
-          <StatusLine :view="statusView" />
+          <StatusLine
+            ref="statusLine"
+            :view="statusView"
+            :message-id="lastAssistantId"
+            @jump="jumpTo"
+          />
           <UChatPrompt
             v-model="input"
             :error="errorText"

@@ -45,7 +45,7 @@ The product vision, tool registry, Bridge, verification engine, scheduler and bu
 - Pages `/icons` (the icon sheet), and placeholders `/bridge`, `/skills`, `/teams`.
 - **Models (bring your own key):** `shared/providers.ts` (catalog of 14 providers plus custom OpenAI-compatible endpoints), `server/providers/` (`registry.ts` builds a model from a selection, `models.ts` fetches and normalises model lists, `netGuard.ts` blocks dangerous addresses, `redact.ts` strips keys from errors), routes `GET /api/providers`, `POST /api/providers/models`, `POST /api/providers/test`, and `POST /api/chat` accepting a `model` selection. App side: `src/composables/useModels.ts` (keys and selection in browser localStorage), `src/pages/models.vue`, `src/components/models/`.
 - Decisions for Models: keys live in the browser and travel in each request body, never stored by the server; self-hosters can use `OPENLOBS_<PROVIDER>_API_KEY` env vars (see `.env.example`); capabilities are never guessed (OpenRouter's list is used, everything else is "unknown" until the Test button checks tool calling); a model without tools still works as plain chat; custom addresses are guarded against SSRF, and cloud-metadata/link-local addresses are always blocked.
-- Tests: 61 passing (`npm test`): demo model, status line, providers, network guard, brand icons, chat store, rate limiter, accounts. `tests/mockOpenAI.mts` is a fake OpenAI-compatible server (`npx tsx tests/runMock.mts`, key `test-key`, `http://127.0.0.1:4010/v1`); `tests/runMockIdp.mts` is a fake OpenID Connect provider on `:4020`.
+- Tests: 66 passing (`npm test`): demo model, status line, providers, network guard, brand icons, chat store, rate limiter, accounts. `tests/mockOpenAI.mts` is a fake OpenAI-compatible server (`npx tsx tests/runMock.mts`, key `test-key`, `http://127.0.0.1:4010/v1`); `tests/runMockIdp.mts` is a fake OpenID Connect provider on `:4020`.
 - Typechecks clean: `npm run typecheck` and `npm run typecheck:server`.
 
 ### Try it
@@ -65,6 +65,12 @@ Say: "Summarise my sales and make me a workbook". Watch reasoning, three tool ca
 - **Model picker sits in the message box** (next to the + button, so a thumb reaches it). The Bridge status is an icon in the top bar.
 - **Real brand logos** for providers and labs (`shared/brands.ts`, Lobe Icons, MIT, bundled by `scripts/build-icons.mjs`). A model shows its lab's logo (a Claude model through OpenRouter shows Claude), then the provider's logo, then a generic icon. Colour versions only where they stay readable in dark mode.
 
+### The step tray (second session, part 3)
+
+- Logic: `src/lib/status.ts` is a pure function from message parts to the status line and `steps` (actions only: tool calls; reasoning is deliberately not a step). It also exports `stepAnchor(messageId, partIndex)` and `toolSubject()`. Tests in `tests/status.test.mts`.
+- Components: `StatusLine.vue` (the line, a real button when there are steps), `StepTray.vue` (the sheet: drag handle, close button, rows), `MessageParts.vue` wraps each reasoning and tool part in an element with the anchor id, `ChatView.vue` owns `jumpTo(anchor)` (scroll, tint with `.ol-flash`, focus) and the own "back to the latest" button.
+- Behaviour is specified in `docs/DESIGN_NOTES.md` (Built section). The browser suite is `/tmp/shots_tray.py` style: 23 checks including drag, Escape, focus return, jump targets and hit-testing. Rebuild it from the design notes if lost.
+
 ### Accounts and saved chats (second session, part 2)
 
 - Better Auth 1.7 + SQLite (`better-sqlite3`). Server: `server/auth/` (`config.ts` env to config, `auth.ts` factory and migrations, `mailer.ts` SMTP, `session.ts`), `server/chats/store.ts` (ChatStore interface, SQLite implementation, primary key `(user_id, id)` so ids cannot collide or be guessed across people), `server/utils/rateLimit.ts` and `limits.ts`, routes `/api/auth/*`, `/api/auth-config`, `/api/chats`, `/api/chats/:id` (GET, PATCH, DELETE). `POST /api/chat` accepts an `id`, optionally knows the signed-in user, rate-limits, and saves the finished conversation in `onEnd`.
@@ -73,7 +79,7 @@ Say: "Summarise my sales and make me a workbook". Watch reasoning, three tool ca
 - Generic OpenID Connect providers in Better Auth 1.7 sign in through the **social** route (`signIn.social({ provider: id })`, callback `/api/auth/callback/<id>`), and are discovered at server start.
 - **Rule for the tool registry phase:** the client sends the whole message history, including tool results and approvals. Never trust those for anything with side effects. Approvals and tool runs must be recorded and checked on the server, or a person could forge an approval in their own request.
 - Known gaps: rename is not in the UI; no account deletion or data export; no two-factor or passkeys; the rate limiter is in-memory (one process); stored chats are one JSON record each.
-- Design proposals (not built): `docs/DESIGN_NOTES.md` (the area above the message box becomes one line plus a tray of steps that jump to the step).
+- Design: see `docs/DESIGN_NOTES.md`. Not yet folded into the single line: errors and the "model cannot use tools" note.
 
 ## What is NOT real yet (be honest about this)
 
@@ -112,6 +118,10 @@ Say: "Summarise my sales and make me a workbook". Watch reasoning, three tool ca
 - Do not push to `main`. Work on a branch and tell them the branch name.
 
 ## Bugs found by looking and testing (so they are not repeated)
+
+- The tray showed "1 step" for a plain reply because reasoning counted as a step. Reasoning is not a step.
+- Nuxt UI's built-in scroll-to-bottom button hid behind the message box, and a position-only test passed anyway. Always test hit-testing (`elementFromPoint`) for floating controls. Scroll events do not bubble: listen with `capture: true` on the document to find which element scrolls.
+- Stacked translucent layers (a blurred, semi-transparent sheet over a blurred, semi-transparent footer) left a visible inner rectangle. Use one opaque surface.
 
 - Background servers: starting a second dev server while an old one is running silently moves it to another port, and deleting the SQLite file under a running server breaks it. Kill old servers first (`pkill -f '[v]ite --host'`) then delete `data/`. Run servers and the browser test in one command; `/tmp/run_all.sh` style scripts help.
 - Playwright `text=...` picks the first match even if hidden; use `text=... >> visible=true`.

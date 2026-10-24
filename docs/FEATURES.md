@@ -55,7 +55,8 @@ Discover, Build, Lab, Compose, Skills Studio, Forge, Intelligence, Benchmark, Gr
 | Reasoning shown and collapsible | Real | Shown when the model sends it. |
 | Tool cards with reasons, location and risk | Real UI, demo tools | |
 | Approvals (allow once, always allow, deny) | Real | Enforced by the runtime. "Always allow" lasts one page session. |
-| Live status line and activity ticker | Real | Built from real events, with tests. |
+| Live status line and step tray | **Real** | One line while working; tap to open a list of the actions taken; tap a step to jump to it in the chat; a waiting approval jumps straight to the approval. Drag, Escape and close button to put away. Built from real events, with tests and a 23-check browser suite. See `docs/DESIGN_NOTES.md`. |
+| Back to the latest button | Real | Appears when scrolled up; attached above the message box. |
 | Errors shown with Try again | Real | |
 | Light and dark, mobile first | Real | |
 | Custom icons and brand mark | Real | |
@@ -68,7 +69,7 @@ Discover, Build, Lab, Compose, Skills Studio, Forge, Intelligence, Benchmark, Gr
 | Real verification of outputs | Not started | |
 | Artifact storage | Not started | |
 | Billing, teams, sharing | Not started | |
-| Tests | 61 passing | Demo model, status line, providers, network guard, brand icons, chat store, rate limiter and accounts. |
+| Tests | 66 passing | Demo model, status and steps, providers, network guard, brand icons, chat store, rate limiter and accounts. Plus browser suites (tray, accounts, models, demo flow) run by hand. |
 
 ## What the first usable version still needs, in order
 

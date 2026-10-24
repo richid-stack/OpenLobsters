@@ -2,6 +2,7 @@
 import { isReasoningUIPart, isTextUIPart, isToolUIPart } from 'ai'
 import type { UIMessage } from 'ai'
 import { isPartStreaming } from '@nuxt/ui/utils/ai'
+import { stepAnchor } from '../../lib/status'
 import ChatComark from './Comark'
 import ToolCard from './ToolCard.vue'
 
@@ -14,24 +15,36 @@ const emit = defineEmits<{ respond: [approvalId: string, approved: boolean, alwa
     v-for="(part, index) in message.parts"
     :key="`${message.id}-${part.type}-${index}`"
   >
-    <UChatReasoning
+    <div
       v-if="isReasoningUIPart(part)"
-      :text="part.text"
-      :streaming="isPartStreaming(part)"
-      chevron="leading"
-      icon="i-openlobs-spark"
+      :id="stepAnchor(message.id, index)"
+      tabindex="-1"
+      class="ol-anchor"
     >
-      <ChatComark
-        :value="part.text"
+      <UChatReasoning
+        :text="part.text"
         :streaming="isPartStreaming(part)"
-      />
-    </UChatReasoning>
+        chevron="leading"
+        icon="i-openlobs-spark"
+      >
+        <ChatComark
+          :value="part.text"
+          :streaming="isPartStreaming(part)"
+        />
+      </UChatReasoning>
+    </div>
 
-    <ToolCard
+    <div
       v-else-if="isToolUIPart(part)"
-      :part="part"
-      @respond="(id, ok, always) => emit('respond', id, ok, always)"
-    />
+      :id="stepAnchor(message.id, index)"
+      tabindex="-1"
+      class="ol-anchor"
+    >
+      <ToolCard
+        :part="part"
+        @respond="(id, ok, always) => emit('respond', id, ok, always)"
+      />
+    </div>
 
     <ChatComark
       v-else-if="isTextUIPart(part)"
