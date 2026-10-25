@@ -33,13 +33,27 @@ const why = computed(() => {
   return typeof w === 'string' ? w : ''
 })
 
-const locationIcon = computed(() => ({ remote: 'i-lucide-globe', bridge: 'i-openlobs-bridge', sandbox: 'i-lucide-box' })[meta.value.location])
+const locationIcon = computed(() => ({ remote: 'i-lucide-globe', bridge: 'i-openlobs-bridge', server: 'i-lucide-server' })[meta.value.location])
 const pretty = (v: unknown) => (v === undefined ? '' : typeof v === 'string' ? v : JSON.stringify(v, null, 2))
 
 const checks = computed(() => (name.value === 'verify_artifact' && Array.isArray(output.value?.checks))
   ? output.value!.checks as Array<{ label: string, passed: boolean, detail: string }>
   : [])
 const verified = computed(() => name.value === 'verify_artifact' && output.value?.status === 'passed')
+const problems = computed(() => name.value === 'verify_artifact' && output.value?.status === 'failed')
+
+// A saved file: offered for download right on the step that made it.
+interface Artifact { id: string, name: string, sizeBytes: number, sheets: Array<{ name: string, rows: number }> }
+const artifact = computed(() => (output.value?.artifact as Artifact | undefined))
+const fileLine = computed(() => {
+  const a = artifact.value
+  if (!a) return ''
+  const kb = a.sizeBytes < 1024 ? `${a.sizeBytes} B` : `${(a.sizeBytes / 1024).toFixed(a.sizeBytes < 10240 ? 1 : 0)} KB`
+  return `${kb} \u00b7 ${a.sheets.length} ${a.sheets.length === 1 ? 'sheet' : 'sheets'}`
+})
+
+// What the person is about to allow, in a few plain words.
+const describe = computed(() => meta.value.describe?.(props.part.input))
 </script>
 
 <template>
@@ -67,6 +81,17 @@ const verified = computed(() => name.value === 'verify_artifact' && output.value
     </UChatTool>
 
     <div class="mt-1.5 ms-6 space-y-2">
+      <p
+        v-if="failed && part.errorText"
+        class="flex items-start gap-1.5 text-sm text-error"
+        role="alert"
+      >
+        <UIcon
+          name="i-lucide-circle-alert"
+          class="mt-0.5 size-4 shrink-0"
+        />
+        <span>{{ part.errorText }}</span>
+      </p>
       <p
         v-if="why"
         class="flex items-start gap-1.5 text-xs text-muted"
@@ -103,11 +128,47 @@ const verified = computed(() => name.value === 'verify_artifact' && output.value
           size="sm"
         />
         <UBadge
+          v-if="problems"
+          icon="i-lucide-triangle-alert"
+          label="Problems found"
+          color="error"
+          variant="soft"
+          size="sm"
+        />
+        <UBadge
           v-if="output?.demo"
           label="Demo data"
           color="neutral"
           variant="soft"
           size="sm"
+        />
+      </div>
+
+      <div
+        v-if="artifact"
+        class="flex items-center gap-3 py-0.5"
+      >
+        <UIcon
+          name="i-lucide-file-spreadsheet"
+          class="size-5 shrink-0 text-success"
+        />
+        <div class="min-w-0 flex-1">
+          <p class="truncate text-sm text-highlighted">
+            {{ artifact.name }}
+          </p>
+          <p class="text-xs text-muted">
+            {{ fileLine }}
+          </p>
+        </div>
+        <UButton
+          :to="`/api/artifacts/${artifact.id}`"
+          external
+          download
+          label="Download"
+          icon="i-lucide-download"
+          size="sm"
+          color="neutral"
+          variant="soft"
         />
       </div>
 
@@ -124,8 +185,18 @@ const verified = computed(() => name.value === 'verify_artifact' && output.value
             <p class="text-sm font-medium text-highlighted">
               Allow OpenLobs to {{ meta.approve }}?
             </p>
+            <p
+              v-if="describe"
+              class="mt-0.5 flex items-center gap-1.5 text-sm text-highlighted"
+            >
+              <UIcon
+                :name="meta.icon"
+                class="size-4 shrink-0 text-muted"
+              />
+              <span class="min-w-0 truncate">{{ describe }}</span>
+            </p>
             <p class="text-xs text-muted mt-0.5">
-              Nothing happens until you choose. This runs on {{ LOCATION_LABEL[meta.location].toLowerCase() }}, inside the folder you approved.
+              {{ meta.approveDetail ?? `Nothing happens until you choose. This runs ${LOCATION_LABEL[meta.location].toLowerCase()}.` }}
             </p>
           </div>
         </div>

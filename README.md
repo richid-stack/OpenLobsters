@@ -42,7 +42,7 @@ cd apps/mock-server && pip install -r requirements.txt && pytest
 cd apps/web
 npm install
 npm run dev          # http://localhost:3000
-npm test             # 66 tests
+npm test             # 107 tests
 ```
 
 With no setup it uses a built-in **demo model** (scripted answers, sample data, clearly labelled). Try "Summarise my sales and make me a workbook" to see reasoning, tool calls, an approval and a verification check.
@@ -57,6 +57,15 @@ Anyone can try OpenLobs without an account (nothing is saved). Signing in saves 
 - **Privacy:** a person can only ever see their own chats (enforced on every query, tested). Model keys are still kept in the browser, not on the server.
 - **First start:** you may see a harmless "schema mismatch" message from the auth library while it creates its tables.
 - **Honest limits:** GitHub, Google and Microsoft are configured but have not been run against the real services (no access from the build environment). The OpenID Connect path is tested end to end against a fake provider, in tests and in a real browser. If the identity provider is down when the server starts, its button is skipped until the server restarts.
+
+## Real tools and files
+
+Paste a table (CSV) and ask for a workbook. OpenLobs reads it, asks your approval, builds a real Excel file, opens it again to check it, and offers it for download.
+
+- **What is real:** reading the table and its totals, building the `.xlsx` (live `SUM` formulas, formatted headers), the approval, the verification, storage and download. A file opens in Excel and in other programs; the tests read it with a separate library (openpyxl) to prove that.
+- **What is checked:** the saved file's fingerprint, sheet names and order, every value against your table, that each total is a live formula whose stored value is right, that no cell holds an error value, and that text like `=1+1` stays text. If the file was changed after saving, or anything does not match, the app says exactly which check failed and where, and does not call the file correct.
+- **Safety:** saving a file needs an account and your approval. The server writes down what it asked and refuses to run anything that was not asked, was edited, was already used, or belongs to someone else. Files are private to their owner, limited in size and number, and downloaded as attachments.
+- **What is still a demo:** the built-in demo model decides what to do with simple rules (the tools it calls are real). With a real model chosen in Models, the model decides. Web search returns sample results. There is no screen listing your files yet.
 
 ## Bring your own model
 

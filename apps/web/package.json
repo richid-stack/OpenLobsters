@@ -10,7 +10,7 @@
     "icons": "node scripts/build-icons.mjs",
     "typecheck": "vue-tsc -p ./tsconfig.app.json",
     "typecheck:server": "tsc -p tsconfig.server.json",
-    "test": "tsx tests/demoModel.test.mts && tsx tests/status.test.mts && tsx tests/providers.test.mts && tsx tests/brands.test.mts && tsx tests/chatStore.test.mts && tsx tests/rateLimit.test.mts && tsx tests/auth.test.mts"
+    "test": "tsx tests/demoModel.test.mts && tsx tests/status.test.mts && tsx tests/providers.test.mts && tsx tests/brands.test.mts && tsx tests/chatStore.test.mts && tsx tests/rateLimit.test.mts && tsx tests/auth.test.mts && tsx tests/csv.test.mts && tsx tests/workbook.test.mts && tsx tests/artifacts.test.mts && tsx tests/tools.test.mts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.85",
@@ -28,6 +28,7 @@
     "ai": "^7.0.93",
     "better-auth": "^1.7.12",
     "better-sqlite3": "^13.0.3",
+    "exceljs": "^4.4.0",
     "nitro": "^3.0.260311-beta",
     "nodemailer": "^7.0.13",
     "shiki": "^4.4.3",

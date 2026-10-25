@@ -46,6 +46,23 @@ const emit = defineEmits<{ respond: [approvalId: string, approved: boolean, alwa
       />
     </div>
 
+    <!-- What a person typed or pasted keeps its line breaks (a pasted table must stay a table), and a very long
+         paste scrolls inside its own bubble instead of pushing the conversation off the screen. -->
+    <div
+      v-else-if="isTextUIPart(part) && message.role === 'user'"
+      class="max-h-56 overflow-y-auto whitespace-pre-wrap break-words"
+    >
+      {{ part.text }}
+    </div>
+
+    <!-- What a person typed or pasted keeps its line breaks. A pasted table must still look like a table. -->
+    <div
+      v-else-if="isTextUIPart(part) && message.role === 'user'"
+      class="max-h-56 overflow-y-auto whitespace-pre-wrap break-words"
+    >
+      {{ part.text }}
+    </div>
+
     <ChatComark
       v-else-if="isTextUIPart(part)"
       :value="part.text"

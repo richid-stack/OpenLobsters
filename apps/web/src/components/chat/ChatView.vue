@@ -147,8 +147,22 @@ const errorText = computed(() => {
   } catch { return error.value }
 })
 
+// A small table to try the whole flow with. Two products sell below cost, so the summary has something to find.
+const SAMPLE_PROMPT = `Summarise this sales data and make me a workbook:
+
+month,product,units,revenue,cost
+Jul,Rice 25kg,40,1840,1900
+Jul,Cooking oil 5L,32,1120,1150
+Jul,Sugar 1kg,95,950,700
+Aug,Rice 25kg,44,2025,2090
+Aug,Cooking oil 5L,30,1050,1080
+Aug,Sugar 1kg,110,1100,810
+Sep,Rice 25kg,38,1748,1805
+Sep,Cooking oil 5L,35,1225,1260
+Sep,Sugar 1kg,120,1200,880`
+
 const suggestions = [
-  { icon: 'i-lucide-file-spreadsheet', label: 'Summarise my sales and make me a workbook' },
+  { icon: 'i-lucide-file-spreadsheet', label: 'Turn sample sales data into a workbook', prompt: SAMPLE_PROMPT },
   { icon: 'i-lucide-globe', label: 'Search for the latest news on this topic' },
   { icon: 'i-lucide-hand', label: 'Hello, what can you do?' }
 ]
@@ -202,7 +216,7 @@ const suggestions = [
               variant="subtle"
               size="lg"
               class="justify-start"
-              @click="ask(s.label)"
+              @click="ask(s.prompt ?? s.label)"
             />
           </div>
         </div>

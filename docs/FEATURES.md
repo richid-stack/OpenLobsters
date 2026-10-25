@@ -6,8 +6,8 @@ Last updated: 22 Oct 2026, branch `feat/vue-shell`.
 
 The percentages below are my rough judgement, not a measurement:
 
-- **The full vision** (the 10 systems in blueprint 1 plus the 15 products in blueprint 2): about **3 to 5%**.
-- **A first usable version** (sign in, saved chats, a real model of your choice, two or three real tools, approvals, and one real output that is checked): about **25 to 30%**.
+- **The full vision** (the 10 systems in blueprint 1 plus the 15 products in blueprint 2): about **5 to 7%**.
+- **A first usable version** (sign in, saved chats, a real model of your choice, two or three real tools, approvals, and one real output that is checked): about **45 to 50%**. Sign-in, saved chats, model choice, approvals and one fully real, checked file flow now exist. Still missing: proof against real model providers, a files screen, more real tools, and uploads.
 
 Status words: **Real** = works and is tested. **Partial** = real but limited, limits listed. **Demo** = the screen exists, the behaviour is simulated. **Not started**.
 
@@ -17,13 +17,13 @@ Status words: **Real** = works and is tested. **Partial** = real but limited, li
 |---|---|---|---|
 | 1 | Libraries | Not started | |
 | 2 | Skills | Not started | |
-| 3 | Tools | Partial (demo tools) | Tool metadata for the UI (icon, words, where it runs, read or write), a `why` field on every call, five demo tools. **No** tool registry (schemas, permissions, health), and no real tool. |
+| 3 | Tools | Partial | **Real:** `analyze_table` (reads a pasted table, real totals), `create_spreadsheet` (builds a real Excel file after approval), `verify_artifact`. Demo: `web_search`. Not built: a Tool Registry (schemas, permissions, health), file upload, the Bridge. |
 | 4 | MCP integration | Not started | |
 | 5 | Workflow engine | Not started | |
 | 6 | Agent orchestration | Not started | One run loop with a step limit. No teams, hand-offs, router or scheduling. |
 | 7 | **Model connectors** | **Partial, real** | See below. The most complete system so far. |
-| 8 | Validation and evaluation | Demo | Verification checks show on screen, but the checks are simulated and always pass. No evaluation harness. |
-| 9 | Security and permissions | Partial | Approvals enforced by the runtime, accounts and per-person data, rate limiting, a guard against dangerous model addresses, keys removed from errors. **No** audit log, execution isolation, secret vault, two-factor or roles. |
+| 8 | Validation and evaluation | Partial | **Real verification for spreadsheets:** the saved file is opened again and compared with what was asked for (fingerprint, sheet names, every value, live total formulas and their values, error values, text never stored as a formula). Tested by changing a stored file and checking the app reports exactly where. No evaluation harness; no other file types yet. |
+| 9 | Security and permissions | Partial | Approvals enforced by the runtime **and recorded by the server** (an edited, replayed, invented or someone else's approval does not run), accounts and per-person data and files, rate limiting, a guard against dangerous model addresses, keys removed from errors, file storage limits, hardened downloads. **No** audit log, execution isolation, secret vault, two-factor or roles. |
 | 10 | Runtime management | Not started | |
 
 ### System 7 in detail (model connectors)
@@ -53,8 +53,8 @@ Discover, Build, Lab, Compose, Skills Studio, Forge, Intelligence, Benchmark, Gr
 |---|---|---|
 | Chat with streaming text | Real | |
 | Reasoning shown and collapsible | Real | Shown when the model sends it. |
-| Tool cards with reasons, location and risk | Real UI, demo tools | |
-| Approvals (allow once, always allow, deny) | Real | Enforced by the runtime. "Always allow" lasts one page session. |
+| Tool cards with reasons, location and risk | Real | Real tools for tables and workbooks; web search is still a demo. |
+| Approvals (allow once, always allow, deny) | Real | Enforced by the runtime and recorded by the server. The card says exactly what will be saved and where. "Always allow" lasts one page session. |
 | Live status line and step tray | **Real** | One line while working; tap to open a list of the actions taken; tap a step to jump to it in the chat; a waiting approval jumps straight to the approval. Drag, Escape and close button to put away. Built from real events, with tests and a 23-check browser suite. See `docs/DESIGN_NOTES.md`. |
 | Back to the latest button | Real | Appears when scrolled up; attached above the message box. |
 | Errors shown with Try again | Real | |
@@ -66,16 +66,17 @@ Discover, Build, Lab, Compose, Skills Studio, Forge, Intelligence, Benchmark, Gr
 | Memory | Not started | |
 | File uploads | Not started | |
 | The Bridge (work on your own computer) | Not started | `read_file` and `create_spreadsheet` are pretend. |
-| Real verification of outputs | Not started | |
-| Artifact storage | Not started | |
+| Real verification of outputs | **Real (spreadsheets)** | See system 8. |
+| Files the app makes: storage and download | **Real** | Per-person, size and count limits, owner-only download, delete (API). Not built: a screen listing your files, clean-up of files when an account is deleted. |
 | Billing, teams, sharing | Not started | |
-| Tests | 66 passing | Demo model, status and steps, providers, network guard, brand icons, chat store, rate limiter and accounts. Plus browser suites (tray, accounts, models, demo flow) run by hand. |
+| Tests | 107 passing | Unit tests for every server module, plus six browser suites (`apps/web/tests/browser`) that drive the real app: tray, accounts, models, logos, demo flow and the real file flow. |
 
 ## What the first usable version still needs, in order
 
 1. Test the native providers with a real key, and fix whatever breaks. Test GitHub and Google sign-in with real app credentials.
 2. (Done) Saved chats and sign-in.
-3. One real tool end to end, with a real file output that is verified by opening it again.
-4. A task model and a tool registry (permissions per tool, not per prompt).
-5. Artifact storage.
-6. Then the Bridge.
+3. (Done) One real tool end to end with a verified file.
+4. A screen listing your files, with delete. Clean up files when an account is deleted.
+5. Uploads (so tools can read a person's own file) and real web search.
+6. A task model and a Tool Registry (permissions per tool, not per prompt).
+7. Then the Bridge.

@@ -3,7 +3,9 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { betterAuth } from 'better-auth'
 import { getMigrations } from 'better-auth/db/migration'
 import { genericOAuth } from 'better-auth/plugins/generic-oauth'
+import { migrateArtifacts } from '../artifacts/store'
 import { migrateChats } from '../chats/store'
+import { migrateApprovals } from '../tools/approvals'
 import { getDb } from '../utils/db'
 import type { Db } from '../utils/db'
 import { authConfigFromEnv, describeAuth } from './config'
@@ -87,6 +89,8 @@ export async function migrateAll(instance: AuthInstance, db: Db) {
   const { runMigrations } = await getMigrations(instance.auth.options)
   await runMigrations()
   migrateChats(db)
+  migrateArtifacts(db)
+  migrateApprovals(db)
 }
 
 let ready: Promise<AuthInstance> | undefined

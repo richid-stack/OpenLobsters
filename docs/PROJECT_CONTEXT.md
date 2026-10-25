@@ -45,7 +45,7 @@ The product vision, tool registry, Bridge, verification engine, scheduler and bu
 - Pages `/icons` (the icon sheet), and placeholders `/bridge`, `/skills`, `/teams`.
 - **Models (bring your own key):** `shared/providers.ts` (catalog of 14 providers plus custom OpenAI-compatible endpoints), `server/providers/` (`registry.ts` builds a model from a selection, `models.ts` fetches and normalises model lists, `netGuard.ts` blocks dangerous addresses, `redact.ts` strips keys from errors), routes `GET /api/providers`, `POST /api/providers/models`, `POST /api/providers/test`, and `POST /api/chat` accepting a `model` selection. App side: `src/composables/useModels.ts` (keys and selection in browser localStorage), `src/pages/models.vue`, `src/components/models/`.
 - Decisions for Models: keys live in the browser and travel in each request body, never stored by the server; self-hosters can use `OPENLOBS_<PROVIDER>_API_KEY` env vars (see `.env.example`); capabilities are never guessed (OpenRouter's list is used, everything else is "unknown" until the Test button checks tool calling); a model without tools still works as plain chat; custom addresses are guarded against SSRF, and cloud-metadata/link-local addresses are always blocked.
-- Tests: 66 passing (`npm test`): demo model, status line, providers, network guard, brand icons, chat store, rate limiter, accounts. `tests/mockOpenAI.mts` is a fake OpenAI-compatible server (`npx tsx tests/runMock.mts`, key `test-key`, `http://127.0.0.1:4010/v1`); `tests/runMockIdp.mts` is a fake OpenID Connect provider on `:4020`.
+- Tests: 107 passing (`npm test`): demo model, status and steps, providers, network guard, brand icons, chat store, rate limiter, accounts, CSV reader, workbook builder and verifier, file store and approval ledger, tools. Browser suites live in `apps/web/tests/browser` (see its README); run with `tests/browser/run.sh <script>.py`. `tests/mockOpenAI.mts` is a fake OpenAI-compatible server (`npx tsx tests/runMock.mts`, key `test-key`); `tests/runMockIdp.mts` is a fake OpenID Connect provider on `:4020`.
 - Typechecks clean: `npm run typecheck` and `npm run typecheck:server`.
 
 ### Try it
@@ -64,6 +64,16 @@ Say: "Summarise my sales and make me a workbook". Watch reasoning, three tool ca
 - **No cards and no border lines in the chat.** Assistant answers, tool steps, approvals, verification checks and errors are plain flat content: icon, text, soft-filled badges (never ringed), plain buttons. No boxes, no bordered panels, no outlined chips. The message box itself keeps its normal outline. The Models settings page still uses cards; the owner's rule was about the chat.
 - **Model picker sits in the message box** (next to the + button, so a thumb reaches it). The Bridge status is an icon in the top bar.
 - **Real brand logos** for providers and labs (`shared/brands.ts`, Lobe Icons, MIT, bundled by `scripts/build-icons.mjs`). A model shows its lab's logo (a Claude model through OpenRouter shows Claude), then the provider's logo, then a generic icon. Colour versions only where they stay readable in dark mode.
+
+### Real tools: tables, workbooks, verification (second session, part 4)
+
+- Server modules: `server/utils/csv.ts` (strict CSV reader, numbers recognised, leading zeros kept as text), `server/artifacts/workbook.ts` (spec schema, `buildWorkbook`, `verifyWorkbook`), `server/artifacts/store.ts` (files on disk, details in SQLite, per-person limits, paths built only from generated ids), `server/tools/index.ts` (`createTools`: `analyze_table`, `create_spreadsheet`, `verify_artifact`; file tools exist only when signed in; `friendlyToolError`), `server/tools/approvals.ts` (the server's approval ledger and the recorder), `server/tools/context.ts`. Routes: `GET /api/artifacts`, `GET /api/artifacts/:id` (download), `DELETE /api/artifacts/:id`.
+- The demo model (`server/utils/demoModel.ts`) reads a pasted table, calls the real tools with real data, reads the tool results back from the conversation, and writes its closing message from what the tools returned, including failures. `planStep(facts, opts)` is pure and tested. Its replies are scripted; its tool calls and the files are real.
+- UI: `ToolCard.vue` shows what an approval will do (`describe` and `approveDetail` in `shared/toolMeta.ts`), a download row, failed checks in red, and the reason when a step fails. The "sample sales data" suggestion sends a small table so the whole flow can be tried. Your own pasted text keeps its line breaks.
+- **Security lesson (do not repeat):** the first version recorded an approval inside the tool's `needsApproval` function. The AI SDK evaluates that function again when it replays a conversation, so a forged "approved" tool call approved itself and created a file. Unit tests missed it because they bypassed the SDK; the browser test caught it. The rule now: `needsApproval` is a plain `true` with no side effects; the ledger entry is written by `createApprovalRecorder`, which watches the **response stream the server sends** (tool input, then approval request) and never reads anything the browser sent. `execute` refuses to run without that record, with the same user, tool and input fingerprint (taken after the schema reads the input), unused and under an hour old. Regression tests in `tests/tools.test.mts` and `tests/browser/real_tools.py`.
+- A conversation that contains an unanswered tool call is rejected by the SDK (so a browser cannot make the server run arbitrary tools by sending one).
+- Tool errors are masked as "An error occurred." by default. `friendlyToolError` lets through only messages written for people (`ToolInputError`), and replaces anything else with "That step did not work."
+- Honest limits: only spreadsheets; the verifier checks the file against the request, not whether the request was what the person wanted; files are not removed when an account is deleted; no files screen; a table must be pasted (no uploads); analysis input is capped (600 KB, 5,000 rows).
 
 ### The step tray (second session, part 3)
 
@@ -120,6 +130,9 @@ Say: "Summarise my sales and make me a workbook". Watch reasoning, three tool ca
 ## Bugs found by looking and testing (so they are not repeated)
 
 - The tray showed "1 step" for a plain reply because reasoning counted as a step. Reasoning is not a step.
+- Pasted tables lost their line breaks in the message bubble (markdown joins lines). People's own text is shown with `whitespace-pre-wrap`.
+- A test that edits a stored file must pass bytes, not a path: files on disk are named by id with no extension, and openpyxl insists on one.
+- Test the real stack, not just the pieces: the approval hole above passed every unit test.
 - Nuxt UI's built-in scroll-to-bottom button hid behind the message box, and a position-only test passed anyway. Always test hit-testing (`elementFromPoint`) for floating controls. Scroll events do not bubble: listen with `capture: true` on the document to find which element scrolls.
 - Stacked translucent layers (a blurred, semi-transparent sheet over a blurred, semi-transparent footer) left a visible inner rectangle. Use one opaque surface.
 

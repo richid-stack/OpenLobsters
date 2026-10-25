@@ -32,6 +32,10 @@ Decisions made while building, and why:
 
 Still to do: errors and notes (for example "this model cannot use tools") are separate flat lines above the message box. The plan was to fold them into the same single line.
 
+## Built: the approval card
+
+It names the action in a sentence, says in a line what will be made (file name, sheets, rows), says plainly where it goes ("saved to your account, nothing is sent anywhere else, you can delete it later"), and offers Allow once, Always allow and Deny as plain buttons. It never describes a different place than the real one: an earlier version said "inside the folder you approved" for a file saved on the server.
+
 ## Proposal: accounts screen
 
 Show only the sign-in methods that are switched on. Put the one most likely wanted first. Email stays available but is visually secondary when social sign-in exists.
