@@ -1,5 +1,7 @@
 # Decisions
 
+> **Note (October 2026).** This log is kept as history. Decisions made since, including the change of web stack and hosting (D1, D10) and sign-in methods (D9), are recorded as short, numbered notes in [`adr/`](adr/README.md). Where they differ, the notes there win.
+
 Accepted on 2026-10-18. Each decision uses the recommendation from `PLAN.md` section 7. Change one by adding a new entry that supersedes it.
 
 | ID | Decision | Why |

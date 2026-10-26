@@ -11,3 +11,7 @@ The typed event stream and resource schemas the UI draws. One definition per lan
 | `openapi/openapi.yaml`, `schema/` | Generated from the Pydantic models |
 
 See `docs/CONTRACT.md`.
+
+
+---
+**Architecture status:** 🚧 Partly built. Typed definitions, in TypeScript and Python, of the events a run produces and the resources around it (tasks, tools, artifacts), with fixtures and a generated API description. See [`docs/architecture/modules.md`](../../docs/architecture/modules.md).

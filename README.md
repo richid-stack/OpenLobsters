@@ -86,18 +86,48 @@ Provider and model logos come from [Lobe Icons](https://github.com/lobehub/lobe-
 
 Open `prototype/openlobs.html` in a browser. Replies are scripted (demo mode) unless the page is opened as a Claude artifact with the Claude and Parallel Search connectors enabled, which gives live replies and web search.
 
-## Layout
+## The whole project at a glance
+
+OpenLobs is built as one app first, with every other part documented as a module so you can see where it is going. **Planned parts are a folder with a README and no code, on purpose.** The full map, with diagrams, is in [`docs/architecture`](docs/architecture/README.md); the order of work is in [`ROADMAP.md`](ROADMAP.md).
 
 ```
-apps/web      the app: Vue 3 frontend and Nitro server routes in one project (AI SDK)
-apps/mock-server  mock API for the event contract (Python)
-packages/     shared types and the event contract
-docs/         blueprints, plan, decisions, feature status, project context
-design/       design tokens
-prototype/    the original single-file prototype (the visual spec)
+apps/
+  web/              ✅ the app: Vue 3 interface and Nitro server in one project
+  bridge/           📋 desktop companion that works with apps on your own computer
+  worker/           📋 background and isolated execution (long jobs, browser, documents)
+  mock-server/      ✅ small mock of the original event contract (a test aid)
+packages/
+  contract/         🚧 typed event and resource contract (TypeScript and Python)
+  orchestrator/     📋 stored tasks, steps, budgets, routing
+  tool-registry/    🚧 what OpenLobs can do, where it runs, how risky it is
+  model-connectors/ 🚧 any model, any provider, your own key
+  verification/     🚧 check that a result is really right (spreadsheets today)
+  artifacts/        🚧 files OpenLobs makes: storage, download, limits
+  security/         🚧 approval ledger, network guard, secrets, rate limits
+  connectors/       📋 GitHub, Google, Slack and more through MCP and OAuth
+  mcp/              📋 MCP client and server
+  skills/           📋 skills, Skills Studio, agent teams
+  workflows/        📋 build, schedule and run repeatable work
+  memory/           📋 optional, visible, deletable memory
+  bridge-protocol/  📋 messages between the server and the Bridge
+  design-system/    🚧 tokens, icons, brand marks and rules
+  sdk/              📋 public API and client library
+docs/               architecture, decisions, plan, feature status, design notes
+prototype/          the original single-file prototype (the visual spec)
 ```
 
-The plan originally named Next.js and FastAPI. The app was built with Vue 3 and Nitro instead (see `docs/PROJECT_CONTEXT.md`). A separate Python backend may still be added for the agent runtime.
+✅ built and tested · 🚧 partly built (the code lives inside `apps/web` today) · 📋 planned, design only
+
+| Read this | To learn |
+|---|---|
+| [`docs/architecture/README.md`](docs/architecture/README.md) | The big picture and how one request flows |
+| [`docs/architecture/modules.md`](docs/architecture/modules.md) | Every module and its honest status |
+| [`docs/architecture/security.md`](docs/architecture/security.md) | Threats, protections and known gaps |
+| [`docs/architecture/bridge.md`](docs/architecture/bridge.md) | How OpenLobs will safely work on your own computer |
+| [`docs/adr`](docs/adr/README.md) | Why each big choice was made |
+| [`docs/FEATURES.md`](docs/FEATURES.md) | What is real, what is demo, what is missing |
+| [`ROADMAP.md`](ROADMAP.md) | The order of work |
+| [`CONTRIBUTING.md`](CONTRIBUTING.md) | How to run it and help |
 
 ## License
 

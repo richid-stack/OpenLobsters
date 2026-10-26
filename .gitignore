@@ -11,3 +11,5 @@ dist/
 apps/web/src/route-map.d.ts
 apps/web/shots/
 data/
+__pycache__/
+*.pyc

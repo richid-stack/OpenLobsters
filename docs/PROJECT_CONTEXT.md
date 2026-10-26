@@ -30,6 +30,10 @@ The product vision, tool registry, Bridge, verification engine, scheduler and bu
 8. **Demo first, real model second.** `server/utils/demoModel.ts` is a stand-in model speaking the same AI SDK protocol, so the UI can be built and reviewed with no keys. Everything it returns is labelled "Demo data" in the UI.
 9. **The person wants screenshots of everything.** Take them with the script described below and show them.
 
+## The architecture map (read first for the big picture)
+
+`docs/architecture/` is the full map of the project: overview and diagrams, runtime, frontend, backend, data model, security, Bridge design, API, deployment, the fifteen ecosystem products. Every module has a README in its own folder with an honest status (built, partly built, planned) and where its code lives today; `docs/architecture/modules.md` is the index. Decisions are in `docs/adr/`. The order of work is `ROADMAP.md`. **Rules:** planned modules are READMEs, never placeholder code; when a module's status changes, update its README, the module index, `docs/FEATURES.md` and `ROADMAP.md` in the same change. GitHub milestones and issues are prepared in `scripts/github/` (preview with `python3 scripts/github/create_issues.py`; creating them needs the owner's go-ahead and a token with Issues: write).
+
 ## Read these too
 
 - `docs/FEATURES.md`: the honest status of every feature (the full vision is about 3 to 5% built; a first usable version about 25 to 30%).

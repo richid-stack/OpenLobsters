@@ -1,0 +1,315 @@
+{
+ "repo": "richid-stack/OpenLobsters",
+ "milestones": [
+  {
+   "key": "M2",
+   "title": "M2: First real tools",
+   "description": "A pasted table becomes a checked Excel file. Left: files screen, uploads, real web search."
+  },
+  {
+   "key": "M3",
+   "title": "M3: Orchestrator and registry",
+   "description": "Stored tasks with budgets and cancel; Tool Registry with permissions; usage and cost; audit log; account settings; observability; smaller first load."
+  },
+  {
+   "key": "M4",
+   "title": "M4: Connectors",
+   "description": "Remote Connector Gateway, MCP, credential vault; GitHub, Google Workspace and Slack first."
+  },
+  {
+   "key": "M5",
+   "title": "M5: Bridge",
+   "description": "Pairing, outbound connection, permissions, Files and Excel adapters on one operating system."
+  },
+  {
+   "key": "M6",
+   "title": "M6: Workflows and scheduling",
+   "description": "Build, run and schedule repeatable work; notifications; more adapters."
+  },
+  {
+   "key": "M7",
+   "title": "M7: Skills and agents",
+   "description": "Skills with tests, Skills Studio, agent teams, memory, creative adapters."
+  },
+  {
+   "key": "M8",
+   "title": "M8: Ecosystem",
+   "description": "Discover, Recipes, Compose, Compatibility Engine."
+  },
+  {
+   "key": "M9",
+   "title": "M9: Teams, public API, billing",
+   "description": "Organisations and roles, API keys and SDK, billing, admin."
+  },
+  {
+   "key": "M10",
+   "title": "M10: Hardening and launch",
+   "description": "Security review, load tests, backups and restore drills, hosted deployment."
+  }
+ ],
+ "issues": [
+  {
+   "title": "[apps/bridge] Bridge (desktop companion)",
+   "body": "**Module:** [`apps/bridge`](https://github.com/richid-stack/OpenLobsters/tree/main/apps/bridge) \u00b7 **Status:** \ud83d\udccb Planned \u00b7 **Plan name:** OpenLobs Bridge\n\nA small app a person installs on their own computer. It connects out to OpenLobs, reports what it can do, and runs approved tasks with the applications already installed there: Excel, Word, PowerPoint, Blender, FL Studio, Git, Python, a browser.\n\n**Where the code is today:** Nothing. The tools that pretend to be on the Bridge (`read_file`) were removed from the real tool set. Design: `docs/architecture/bridge.md`.\n\n## Done when\n- [ ] Pairing, connect, heartbeat, reconnect and revoke work on one operating system\n- [ ] One adapter (Excel or files) completes a task that the Verification Engine can check\n- [ ] Stop, pause and disconnect work during a running task\n\n## Not in scope\n- Cross-platform builds before the first operating system is proven\n- Remote desktop streaming\n\nDesign: [`docs/architecture`](https://github.com/richid-stack/OpenLobsters/tree/main/docs/architecture) and the module's README. Roadmap: [`ROADMAP.md`](https://github.com/richid-stack/OpenLobsters/blob/main/ROADMAP.md).",
+   "milestone": "M5",
+   "labels": [
+    "module",
+    "status: planned"
+   ]
+  },
+  {
+   "title": "[apps/worker] Execution workers and job runner",
+   "body": "**Module:** [`apps/worker`](https://github.com/richid-stack/OpenLobsters/tree/main/apps/worker) \u00b7 **Status:** \ud83d\udccb Planned \u00b7 **Plan name:** Execution Workers\n\nRuns work that should not happen inside a web request: long tasks, scheduled workflows, browser automation, Python and document processing in isolated environments.\n\n**Where the code is today:** Nothing. Tools run inside the request that asked for them, which is fine for parsing a table and writing a small workbook, and not fine for anything long.\n\n## Done when\n- [ ] A job survives a server restart\n- [ ] A job that exceeds its budget is stopped and reported, not left running\n- [ ] Two people's jobs cannot see each other's data (tested)\n\n## Not in scope\n- Choosing a queue product before the first long task exists\n\nDesign: [`docs/architecture`](https://github.com/richid-stack/OpenLobsters/tree/main/docs/architecture) and the module's README. Roadmap: [`ROADMAP.md`](https://github.com/richid-stack/OpenLobsters/blob/main/ROADMAP.md).",
+   "milestone": "M3",
+   "labels": [
+    "module",
+    "status: planned"
+   ]
+  },
+  {
+   "title": "[packages/contract] Event and resource contract",
+   "body": "**Module:** [`packages/contract`](https://github.com/richid-stack/OpenLobsters/tree/main/packages/contract) \u00b7 **Status:** \ud83d\udea7 Partly built \u00b7 **Plan name:** (supporting)\n\nTyped definitions, in TypeScript and Python, of the events a run produces and the resources around it (tasks, tools, artifacts), with fixtures and a generated API description.\n\n**Where the code is today:** Exists and is tested. It is **not** what the running app streams: the app uses the AI SDK message stream. The two have to be reconciled (see \"Open question\" below).\n\n## Done when\n- [ ] Decision recorded: the app adopts the contract as its stream format, or the contract is rebuilt on top of the AI SDK stream\n- [ ] Whichever is chosen, there is one source of truth\n\n## Not in scope\n- Keeping two stream formats alive\n\nDesign: [`docs/architecture`](https://github.com/richid-stack/OpenLobsters/tree/main/docs/architecture) and the module's README. Roadmap: [`ROADMAP.md`](https://github.com/richid-stack/OpenLobsters/blob/main/ROADMAP.md).",
+   "milestone": "M3",
+   "labels": [
+    "module",
+    "status: partial"
+   ]
+  },
+  {
+   "title": "[packages/orchestrator] Task Orchestrator",
+   "body": "**Module:** [`packages/orchestrator`](https://github.com/richid-stack/OpenLobsters/tree/main/packages/orchestrator) \u00b7 **Status:** \ud83d\udccb Planned \u00b7 **Plan name:** OpenLobs Orchestrator\n\nTurns a request into a task with steps, runs them, tracks state, handles errors, asks for approval, and decides when the task is done. It chooses models, skills and tools, and chooses where each runs (server, connector, worker, Bridge).\n\n**Where the code is today:** A thin version: the AI SDK's tool loop with a limit of 8 steps, inside `apps/web/server/routes/api/chat.post.ts`. There is no task record, plan, budget, retry policy, cancellation or router.\n\n## Done when\n- [ ] Every run is a stored task with a state history\n- [ ] Cancel works at every state\n- [ ] A run that exceeds its budget stops and says so\n\n## Not in scope\n- Agent teams and skills (`packages/skills`, M7)\n\nDesign: [`docs/architecture`](https://github.com/richid-stack/OpenLobsters/tree/main/docs/architecture) and the module's README. Roadmap: [`ROADMAP.md`](https://github.com/richid-stack/OpenLobsters/blob/main/ROADMAP.md).",
+   "milestone": "M3",
+   "labels": [
+    "module",
+    "status: planned"
+   ]
+  },
+  {
+   "title": "[packages/tool-registry] Tool Registry",
+   "body": "**Module:** [`packages/tool-registry`](https://github.com/richid-stack/OpenLobsters/tree/main/packages/tool-registry) \u00b7 **Status:** \ud83d\udea7 Partly built \u00b7 **Plan name:** OpenLobs Tool Registry\n\nThe catalogue of what OpenLobs can do. Each tool declares what it is, what it needs, where it runs, how risky it is, and how to check its result.\n\n**Where the code is today:** Two pieces that should become one: `apps/web/shared/toolMeta.ts` (icons, words, where it runs, risk, what to tell the person before approving) and `apps/web/server/tools/` (the actual tools, which exist only for signed-in people when they save files).\n\n## Done when\n- [ ] One registry feeds both the server and the interface\n- [ ] Permissions are stored and enforced per person\n- [ ] A down tool is not offered\n\n## Not in scope\n- The tools themselves (they live with their connector or adapter)\n\nDesign: [`docs/architecture`](https://github.com/richid-stack/OpenLobsters/tree/main/docs/architecture) and the module's README. Roadmap: [`ROADMAP.md`](https://github.com/richid-stack/OpenLobsters/blob/main/ROADMAP.md).",
+   "milestone": "M3",
+   "labels": [
+    "module",
+    "status: partial"
+   ]
+  },
+  {
+   "title": "[packages/model-connectors] Model connectors",
+   "body": "**Module:** [`packages/model-connectors`](https://github.com/richid-stack/OpenLobsters/tree/main/packages/model-connectors) \u00b7 **Status:** \ud83d\udea7 Partly built \u00b7 **Plan name:** Model connectors (blueprint 1, system 7)\n\nLets people use any model from any provider with their own key: OpenAI, Anthropic, Google, OpenRouter, Groq, Mistral, DeepSeek, xAI, Together, Fireworks, Cerebras, DeepInfra, Ollama, LM Studio and any OpenAI-compatible address.\n\n**Where the code is today:** `apps/web/shared/providers.ts` (the catalog), `apps/web/server/providers/` (resolve a model, list models, network guard, key redaction), routes `/api/providers`, `/api/providers/models`, `/api/providers/test`. Keys stay in the browser. Tested end to end against a fake provider; the native OpenAI, Anthropic and Google adapters have not been run against the real services.\n\n## Done when\n- [ ] Each native adapter run once against the real service\n- [ ] Usage and cost recorded per request\n- [ ] Fallback between models when one fails\n\n## Not in scope\n- Hosting models\n\nDesign: [`docs/architecture`](https://github.com/richid-stack/OpenLobsters/tree/main/docs/architecture) and the module's README. Roadmap: [`ROADMAP.md`](https://github.com/richid-stack/OpenLobsters/blob/main/ROADMAP.md).",
+   "milestone": "M3",
+   "labels": [
+    "module",
+    "status: partial"
+   ]
+  },
+  {
+   "title": "[packages/verification] Verification Engine",
+   "body": "**Module:** [`packages/verification`](https://github.com/richid-stack/OpenLobsters/tree/main/packages/verification) \u00b7 **Status:** \ud83d\udea7 Partly built \u00b7 **Plan name:** Verification Engine\n\nDecides whether the requested outcome was actually achieved, using a method suited to the kind of output.\n\n**Where the code is today:** One real verifier: `apps/web/server/artifacts/workbook.ts`. It opens the saved workbook again and compares it with what was asked for (fingerprint, sheets, every value, live total formulas and their values, error cells, text never stored as a formula). Tested by editing a stored file and checking the report.\n\n## Done when\n- [ ] Verifiers for documents, presentations, code (tests), images and browser pages\n- [ ] A way to say what \"done\" means before the work starts (success criteria)\n- [ ] An evaluation set of known-good and known-bad outputs\n\n## Not in scope\n- Judging whether the request was the right request\n\nDesign: [`docs/architecture`](https://github.com/richid-stack/OpenLobsters/tree/main/docs/architecture) and the module's README. Roadmap: [`ROADMAP.md`](https://github.com/richid-stack/OpenLobsters/blob/main/ROADMAP.md).",
+   "milestone": "M2",
+   "labels": [
+    "module",
+    "status: partial"
+   ]
+  },
+  {
+   "title": "[packages/artifacts] Artifact management",
+   "body": "**Module:** [`packages/artifacts`](https://github.com/richid-stack/OpenLobsters/tree/main/packages/artifacts) \u00b7 **Status:** \ud83d\udea7 Partly built \u00b7 **Plan name:** Artifact Management\n\nStores the files OpenLobs makes: ownership, size limits, integrity fingerprints, download, deletion and retention.\n\n**Where the code is today:** `apps/web/server/artifacts/store.ts` (files on disk, details in SQLite), routes `/api/artifacts`. Per-person limits, owner-only download, hardened download headers. Not built: a screen listing your files, clean-up when an account is deleted, object storage, retention rules, previews.\n\n## Done when\n- [ ] Object storage implementation behind the same interface\n- [ ] Files removed when an account is deleted\n- [ ] Retention settings and previews\n\n## Not in scope\n- Editing files (that is a tool)\n\nDesign: [`docs/architecture`](https://github.com/richid-stack/OpenLobsters/tree/main/docs/architecture) and the module's README. Roadmap: [`ROADMAP.md`](https://github.com/richid-stack/OpenLobsters/blob/main/ROADMAP.md).",
+   "milestone": "M2",
+   "labels": [
+    "module",
+    "status: partial"
+   ]
+  },
+  {
+   "title": "[packages/security] Security primitives",
+   "body": "**Module:** [`packages/security`](https://github.com/richid-stack/OpenLobsters/tree/main/packages/security) \u00b7 **Status:** \ud83d\udea7 Partly built \u00b7 **Plan name:** Security and permissions (blueprint 1, system 9)\n\nThe shared building blocks that keep the rest honest: the approval ledger, the network guard for model addresses, secret redaction, rate limiting and the permission model.\n\n**Where the code is today:** Spread across `apps/web/server/`: `tools/approvals.ts` (ledger and recorder), `providers/netGuard.ts`, `providers/redact.ts`, `utils/rateLimit.ts`. Each has tests, including a regression test for a hole found in the approval ledger (a replayed, forged approval approved itself).\n\n## Done when\n- [ ] An audit log of every approval and tool run\n- [ ] Roles and teams\n- [ ] A shared rate-limit store for more than one server process\n- [ ] Secret vault for connector credentials\n\n## Not in scope\n- Sign-in (Better Auth handles it)\n\nDesign: [`docs/architecture`](https://github.com/richid-stack/OpenLobsters/tree/main/docs/architecture) and the module's README. Roadmap: [`ROADMAP.md`](https://github.com/richid-stack/OpenLobsters/blob/main/ROADMAP.md).",
+   "milestone": "M3",
+   "labels": [
+    "module",
+    "status: partial"
+   ]
+  },
+  {
+   "title": "[packages/connectors] Remote Connector Gateway",
+   "body": "**Module:** [`packages/connectors`](https://github.com/richid-stack/OpenLobsters/tree/main/packages/connectors) \u00b7 **Status:** \ud83d\udccb Planned \u00b7 **Plan name:** Remote Connector Gateway\n\nConnects OpenLobs to other services (GitHub, Google Workspace, Slack, Notion, Linear and many more) through their official integrations, MCP servers or a connector platform such as Composio, with one permission model.\n\n**Where the code is today:** Nothing. The registry of candidate servers and the build order are in the owner's notes (`docs/blueprint-*`), including which are covered by Composio and which are gaps.\n\n## Done when\n- [ ] GitHub, Google Workspace and Slack work end to end for one person\n- [ ] Revoking a connection removes access immediately\n- [ ] A read-only scheduled job runs through the gateway\n\n## Not in scope\n- Building every integration ourselves\n\nDesign: [`docs/architecture`](https://github.com/richid-stack/OpenLobsters/tree/main/docs/architecture) and the module's README. Roadmap: [`ROADMAP.md`](https://github.com/richid-stack/OpenLobsters/blob/main/ROADMAP.md).",
+   "milestone": "M4",
+   "labels": [
+    "module",
+    "status: planned"
+   ]
+  },
+  {
+   "title": "[packages/mcp] MCP client and server",
+   "body": "**Module:** [`packages/mcp`](https://github.com/richid-stack/OpenLobsters/tree/main/packages/mcp) \u00b7 **Status:** \ud83d\udccb Planned \u00b7 **Plan name:** MCP integration (blueprint 1, system 4)\n\nLets OpenLobs use tools exposed by MCP servers, and expose its own tools as an MCP server.\n\n**Where the code is today:** Nothing in this repository.\n\n## Done when\n- [ ] One local and one remote server work through the registry\n\n## Not in scope\n- Running untrusted servers without isolation\n\nDesign: [`docs/architecture`](https://github.com/richid-stack/OpenLobsters/tree/main/docs/architecture) and the module's README. Roadmap: [`ROADMAP.md`](https://github.com/richid-stack/OpenLobsters/blob/main/ROADMAP.md).",
+   "milestone": "M4",
+   "labels": [
+    "module",
+    "status: planned"
+   ]
+  },
+  {
+   "title": "[packages/skills] Skills and agents",
+   "body": "**Module:** [`packages/skills`](https://github.com/richid-stack/OpenLobsters/tree/main/packages/skills) \u00b7 **Status:** \ud83d\udccb Planned \u00b7 **Plan name:** Skills (blueprint 1, system 2), Skills Studio, agent teams\n\nA skill is a package of instructions, examples and tool needs that teaches OpenLobs how to do one kind of job well. Agent teams combine skills and tools with a clear hand-off.\n\n**Where the code is today:** Nothing here. (An earlier, separate app has 24 text-only skills that can inform the format.)\n\n## Done when\n- [ ] A skill with a test runs and passes in CI\n- [ ] A skill can be installed and removed\n\n## Not in scope\n- A marketplace before skills have tests\n\nDesign: [`docs/architecture`](https://github.com/richid-stack/OpenLobsters/tree/main/docs/architecture) and the module's README. Roadmap: [`ROADMAP.md`](https://github.com/richid-stack/OpenLobsters/blob/main/ROADMAP.md).",
+   "milestone": "M7",
+   "labels": [
+    "module",
+    "status: planned"
+   ]
+  },
+  {
+   "title": "[packages/workflows] Workflow engine and scheduler",
+   "body": "**Module:** [`packages/workflows`](https://github.com/richid-stack/OpenLobsters/tree/main/packages/workflows) \u00b7 **Status:** \ud83d\udccb Planned \u00b7 **Plan name:** Workflow engine (blueprint 1, system 5), Cron blueprint\n\nLets a person build, schedule and monitor repeatable work: nodes for tools, approvals, conditions, loops and verification, run on a schedule with notifications.\n\n**Where the code is today:** Nothing. The cron blueprint in the owner's notes lists the first jobs (daily ad audit, weekly report, morning inbox briefing, nightly backlog triage).\n\n## Done when\n- [ ] A read-only schedule runs reliably for a week\n- [ ] A failed run notifies and can be retried\n\n## Not in scope\n- Visual canvas before the data model is stable\n\nDesign: [`docs/architecture`](https://github.com/richid-stack/OpenLobsters/tree/main/docs/architecture) and the module's README. Roadmap: [`ROADMAP.md`](https://github.com/richid-stack/OpenLobsters/blob/main/ROADMAP.md).",
+   "milestone": "M6",
+   "labels": [
+    "module",
+    "status: planned"
+   ]
+  },
+  {
+   "title": "[packages/memory] Memory",
+   "body": "**Module:** [`packages/memory`](https://github.com/richid-stack/OpenLobsters/tree/main/packages/memory) \u00b7 **Status:** \ud83d\udccb Planned \u00b7 **Plan name:** Memory\n\nOptional, visible, deletable memory of a person's preferences and past work, used only if they turn it on.\n\n**Where the code is today:** Nothing.\n\n## Done when\n- [ ] A person can see and delete everything stored\n\n## Not in scope\n- Silent profiling\n\nDesign: [`docs/architecture`](https://github.com/richid-stack/OpenLobsters/tree/main/docs/architecture) and the module's README. Roadmap: [`ROADMAP.md`](https://github.com/richid-stack/OpenLobsters/blob/main/ROADMAP.md).",
+   "milestone": "M7",
+   "labels": [
+    "module",
+    "status: planned"
+   ]
+  },
+  {
+   "title": "[packages/bridge-protocol] Bridge protocol",
+   "body": "**Module:** [`packages/bridge-protocol`](https://github.com/richid-stack/OpenLobsters/tree/main/packages/bridge-protocol) \u00b7 **Status:** \ud83d\udccb Planned \u00b7 **Plan name:** Bridge connection architecture\n\nThe messages between the server and the Bridge, as typed schemas shared by both: pairing, capability reports, task requests, progress, approvals, cancel and revoke.\n\n**Where the code is today:** Nothing. The design is in `docs/architecture/bridge.md`.\n\n## Done when\n- [ ] Server and Bridge talk through generated types\n- [ ] A malformed or replayed message is refused\n\n## Not in scope\n- A second transport before the first works\n\nDesign: [`docs/architecture`](https://github.com/richid-stack/OpenLobsters/tree/main/docs/architecture) and the module's README. Roadmap: [`ROADMAP.md`](https://github.com/richid-stack/OpenLobsters/blob/main/ROADMAP.md).",
+   "milestone": "M5",
+   "labels": [
+    "module",
+    "status: planned"
+   ]
+  },
+  {
+   "title": "[packages/design-system] Design system",
+   "body": "**Module:** [`packages/design-system`](https://github.com/richid-stack/OpenLobsters/tree/main/packages/design-system) \u00b7 **Status:** \ud83d\udea7 Partly built \u00b7 **Plan name:** Web Application (premium, clean interface)\n\nThe look and feel: tokens, icons, brand marks and the rules for how things behave and read.\n\n**Where the code is today:** Spread across `design/` (tokens), `apps/web/src/icons/openlobs.ts` (custom icons), `apps/web/shared/brands.ts` (provider and lab logos from Lobe Icons, MIT), `apps/web/src/assets/css/main.css`, and Nuxt UI. Rules are in `docs/DESIGN_NOTES.md`: flat, no cards or borders in the chat, show the work, ask before changing anything.\n\n## Done when\n- [ ] Extracted so a second app (mobile) can use it\n- [ ] A page that shows every pattern in both themes\n\n## Not in scope\n- A second, competing component library\n\nDesign: [`docs/architecture`](https://github.com/richid-stack/OpenLobsters/tree/main/docs/architecture) and the module's README. Roadmap: [`ROADMAP.md`](https://github.com/richid-stack/OpenLobsters/blob/main/ROADMAP.md).",
+   "milestone": "M3",
+   "labels": [
+    "module",
+    "status: partial"
+   ]
+  },
+  {
+   "title": "[packages/sdk] Public API and SDK",
+   "body": "**Module:** [`packages/sdk`](https://github.com/richid-stack/OpenLobsters/tree/main/packages/sdk) \u00b7 **Status:** \ud83d\udccb Planned \u00b7 **Plan name:** (future)\n\nA stable, documented API and a small client library so other software can start tasks, read results and manage files on a person's behalf.\n\n**Where the code is today:** Nothing public. Today's routes under `/api` are for the app itself and can change.\n\n## Done when\n- [ ] A third party completes a task using only the documentation\n\n## Not in scope\n- Opening internal routes as a public API without a version\n\nDesign: [`docs/architecture`](https://github.com/richid-stack/OpenLobsters/tree/main/docs/architecture) and the module's README. Roadmap: [`ROADMAP.md`](https://github.com/richid-stack/OpenLobsters/blob/main/ROADMAP.md).",
+   "milestone": "M9",
+   "labels": [
+    "module",
+    "status: planned"
+   ]
+  },
+  {
+   "title": "Files screen: list, download and delete your files",
+   "body": "Needed so people can find and manage what OpenLobs made. API exists (`/api/artifacts`).\n\nSee `docs/FEATURES.md` and `ROADMAP.md`.",
+   "milestone": "M2",
+   "labels": [
+    "ui",
+    "files"
+   ]
+  },
+  {
+   "title": "Clean up stored files when an account is deleted",
+   "body": "Files on disk are not removed today when a person is deleted. Needs account deletion first.\n\nSee `docs/FEATURES.md` and `ROADMAP.md`.",
+   "milestone": "M2",
+   "labels": [
+    "security",
+    "files"
+   ]
+  },
+  {
+   "title": "Uploads: let tools read a person's own file",
+   "body": "With type and size checks, parsed in a worker, never on the web process.\n\nSee `docs/FEATURES.md` and `ROADMAP.md`.",
+   "milestone": "M2",
+   "labels": [
+    "security",
+    "files"
+   ]
+  },
+  {
+   "title": "Real web search tool",
+   "body": "Replace the demo search with a real one, with sources and honest limits.\n\nSee `docs/FEATURES.md` and `ROADMAP.md`.",
+   "milestone": "M2",
+   "labels": [
+    "tools"
+   ]
+  },
+  {
+   "title": "Content security policy",
+   "body": "No policy is set today; model keys in browser storage make this important.\n\nSee `docs/FEATURES.md` and `ROADMAP.md`.",
+   "milestone": "M3",
+   "labels": [
+    "security"
+   ]
+  },
+  {
+   "title": "Audit log of approvals and tool runs",
+   "body": "Who approved what, when, where it ran, and the outcome.\n\nSee `docs/FEATURES.md` and `ROADMAP.md`.",
+   "milestone": "M3",
+   "labels": [
+    "security"
+   ]
+  },
+  {
+   "title": "Versioned database migrations",
+   "body": "Tables are created with CREATE IF NOT EXISTS today; add numbered migrations before the first column change.\n\nSee `docs/FEATURES.md` and `ROADMAP.md`.",
+   "milestone": "M3",
+   "labels": [
+    "backend"
+   ]
+  },
+  {
+   "title": "Shared rate limiting",
+   "body": "The limiter is in memory (one process). Use a shared store.\n\nSee `docs/FEATURES.md` and `ROADMAP.md`.",
+   "milestone": "M3",
+   "labels": [
+    "backend",
+    "security"
+   ]
+  },
+  {
+   "title": "Reduce first-load size",
+   "body": "The chat screen is 862 KB raw / 245 KB compressed. Lazy-load markdown and code highlighting; set a size budget.\n\nSee `docs/FEATURES.md` and `ROADMAP.md`.",
+   "milestone": "M3",
+   "labels": [
+    "ui",
+    "performance"
+   ]
+  },
+  {
+   "title": "Fold errors and notes above the message box into the single status line",
+   "body": "See docs/DESIGN_NOTES.md.\n\nSee `docs/FEATURES.md` and `ROADMAP.md`.",
+   "milestone": "M3",
+   "labels": [
+    "ui"
+   ]
+  },
+  {
+   "title": "Account settings: sessions, two-factor, passkeys, delete account, export data",
+   "body": "See `docs/FEATURES.md` and `ROADMAP.md`.",
+   "milestone": "M3",
+   "labels": [
+    "security",
+    "ui"
+   ]
+  },
+  {
+   "title": "Run the native OpenAI, Anthropic and Google adapters against the real services",
+   "body": "Only the OpenAI-compatible path has been exercised (against a fake provider).\n\nSee `docs/FEATURES.md` and `ROADMAP.md`.",
+   "milestone": "M3",
+   "labels": [
+    "models"
+   ]
+  },
+  {
+   "title": "Test GitHub, Google and Microsoft sign-in with real app credentials",
+   "body": "Configured but never run against the real services.\n\nSee `docs/FEATURES.md` and `ROADMAP.md`.",
+   "milestone": "M3",
+   "labels": [
+    "security"
+   ]
+  }
+ ]
+}
