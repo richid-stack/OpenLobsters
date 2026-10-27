@@ -106,3 +106,38 @@ export function statusFromParts(parts: AnyPart[], chatStatus: 'submitted' | 'str
   if (last.type === 'text') return { line: 'Putting the answer together', live: true, waiting: false, steps }
   return { line: 'Working', live: true, waiting: false, steps }
 }
+
+export interface Notice {
+  kind: 'error' | 'info'
+  title?: string
+  text: string
+  /** Plain text buttons. The interface decides what each id does. */
+  actions: Array<{ id: 'retry' | 'models'; label: string }>
+  dismissible: boolean
+}
+
+/**
+ * The one line above the message box has one owner at a time. An error comes first, because it is the thing
+ * that needs attention. A "this model only chats" note comes next, but only while nothing is running or
+ * waiting, so it never talks over live work. Otherwise the normal status line is shown.
+ */
+export function noticeFor(input: { error?: string, chatOnly?: boolean, view: StatusView }): Notice | null {
+  if (input.error) {
+    return {
+      kind: 'error',
+      title: 'That did not work.',
+      text: input.error,
+      actions: [{ id: 'retry', label: 'Try again' }, { id: 'models', label: 'Models' }],
+      dismissible: true
+    }
+  }
+  if (input.chatOnly && !input.view.live && !input.view.waiting) {
+    return {
+      kind: 'info',
+      text: 'This model cannot use tools, so it will only chat.',
+      actions: [{ id: 'models', label: 'Change model' }],
+      dismissible: false
+    }
+  }
+  return null
+}

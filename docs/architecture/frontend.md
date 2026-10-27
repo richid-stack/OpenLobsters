@@ -105,4 +105,3 @@ Most of the language files are loaded only when a code block needs them. The cha
 - No offline behaviour, no installable app, no push notifications.
 - Chat history loads the newest 200 chats and has no search.
 - Renaming a chat exists in the API but not in the interface.
-- Errors and notes above the message box are still separate lines; the plan is one line (see `../DESIGN_NOTES.md`).

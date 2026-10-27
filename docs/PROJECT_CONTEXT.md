@@ -49,7 +49,7 @@ The product vision, tool registry, Bridge, verification engine, scheduler and bu
 - Pages `/icons` (the icon sheet), and placeholders `/bridge`, `/skills`, `/teams`.
 - **Models (bring your own key):** `shared/providers.ts` (catalog of 14 providers plus custom OpenAI-compatible endpoints), `server/providers/` (`registry.ts` builds a model from a selection, `models.ts` fetches and normalises model lists, `netGuard.ts` blocks dangerous addresses, `redact.ts` strips keys from errors), routes `GET /api/providers`, `POST /api/providers/models`, `POST /api/providers/test`, and `POST /api/chat` accepting a `model` selection. App side: `src/composables/useModels.ts` (keys and selection in browser localStorage), `src/pages/models.vue`, `src/components/models/`.
 - Decisions for Models: keys live in the browser and travel in each request body, never stored by the server; self-hosters can use `OPENLOBS_<PROVIDER>_API_KEY` env vars (see `.env.example`); capabilities are never guessed (OpenRouter's list is used, everything else is "unknown" until the Test button checks tool calling); a model without tools still works as plain chat; custom addresses are guarded against SSRF, and cloud-metadata/link-local addresses are always blocked.
-- Tests: 107 passing (`npm test`): demo model, status and steps, providers, network guard, brand icons, chat store, rate limiter, accounts, CSV reader, workbook builder and verifier, file store and approval ledger, tools. Browser suites live in `apps/web/tests/browser` (see its README); run with `tests/browser/run.sh <script>.py`. `tests/mockOpenAI.mts` is a fake OpenAI-compatible server (`npx tsx tests/runMock.mts`, key `test-key`); `tests/runMockIdp.mts` is a fake OpenID Connect provider on `:4020`.
+- Tests: 111 passing (`npm test`): demo model, status and steps, providers, network guard, brand icons, chat store, rate limiter, accounts, CSV reader, workbook builder and verifier, file store and approval ledger, tools. Browser suites live in `apps/web/tests/browser` (see its README); run with `tests/browser/run.sh <script>.py`. `tests/mockOpenAI.mts` is a fake OpenAI-compatible server (`npx tsx tests/runMock.mts`, key `test-key`); `tests/runMockIdp.mts` is a fake OpenID Connect provider on `:4020`.
 - Typechecks clean: `npm run typecheck` and `npm run typecheck:server`.
 
 ### Try it
@@ -93,7 +93,7 @@ Say: "Summarise my sales and make me a workbook". Watch reasoning, three tool ca
 - Generic OpenID Connect providers in Better Auth 1.7 sign in through the **social** route (`signIn.social({ provider: id })`, callback `/api/auth/callback/<id>`), and are discovered at server start.
 - **Rule for the tool registry phase:** the client sends the whole message history, including tool results and approvals. Never trust those for anything with side effects. Approvals and tool runs must be recorded and checked on the server, or a person could forge an approval in their own request.
 - Known gaps: rename is not in the UI; no account deletion or data export; no two-factor or passkeys; the rate limiter is in-memory (one process); stored chats are one JSON record each.
-- Design: see `docs/DESIGN_NOTES.md`. Not yet folded into the single line: errors and the "model cannot use tools" note.
+- Design: see `docs/DESIGN_NOTES.md`. The line above the message box has one owner (error, then the chat-only note, then the normal status); `noticeFor` in `src/lib/status.ts`, rendered by `StatusLine.vue`.
 
 ## What is NOT real yet (be honest about this)
 

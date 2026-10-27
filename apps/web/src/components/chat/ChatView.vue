@@ -12,7 +12,7 @@ import MessageParts from './MessageParts.vue'
 import StatusLine from './StatusLine.vue'
 import ModelPicker from '../models/ModelPicker.vue'
 import { useModels } from '../../composables/useModels'
-import { statusFromParts } from '../../lib/status'
+import { noticeFor, statusFromParts } from '../../lib/status'
 
 // One ChatView is one conversation. Signed in, it is saved under `chatId`; signed out, it lives only on this page.
 const props = defineProps<{ chatId: string, initialMessages?: UIMessage[], title?: string }>()
@@ -137,6 +137,14 @@ function ask(text: string) {
   sendMessage({ text })
 }
 
+// The message above the message box: an error, or a note, or nothing (then the normal status line shows).
+const notice = computed(() => noticeFor({ error: errorText.value?.message, chatOnly: models.selectedInfo.value?.tools === false, view: statusView.value }))
+function onNoticeAction(id: 'retry' | 'models' | 'dismiss') {
+  if (id === 'retry') void regenerate()
+  else if (id === 'models') void router.push('/models')
+  else clearError()
+}
+
 // A failed request arrives as JSON text. Show the plain sentence, not the JSON.
 const errorText = computed(() => {
   const raw = error.value?.message
@@ -255,63 +263,13 @@ const suggestions = [
               @click="toBottom"
             />
           </Transition>
-          <div
-            v-if="errorText"
-            class="flex items-start gap-2 px-1 pb-2.5 text-sm"
-            role="alert"
-          >
-            <UIcon
-              name="i-lucide-circle-alert"
-              class="size-4 text-error mt-0.5 shrink-0"
-            />
-            <div class="min-w-0 flex-1">
-              <p class="font-medium text-highlighted">
-                That did not work
-              </p>
-              <p class="text-muted">
-                {{ errorText.message }}
-              </p>
-              <div class="mt-1.5 flex gap-2">
-                <UButton
-                  label="Try again"
-                  size="xs"
-                  color="neutral"
-                  variant="soft"
-                  @click="regenerate()"
-                />
-                <UButton
-                  label="Models"
-                  size="xs"
-                  color="neutral"
-                  variant="ghost"
-                  to="/models"
-                />
-              </div>
-            </div>
-            <UButton
-              icon="i-lucide-x"
-              size="xs"
-              color="neutral"
-              variant="ghost"
-              aria-label="Dismiss"
-              @click="clearError()"
-            />
-          </div>
-          <p
-            v-if="models.selectedInfo.value?.tools === false"
-            class="flex items-center gap-1.5 px-1 pb-1.5 text-xs text-muted"
-          >
-            <UIcon
-              name="i-lucide-wrench"
-              class="size-3.5"
-            />
-            This model cannot use tools, so it will only chat.
-          </p>
           <StatusLine
             ref="statusLine"
             :view="statusView"
             :message-id="lastAssistantId"
+            :notice="notice"
             @jump="jumpTo"
+            @action="onNoticeAction"
           />
           <UChatPrompt
             v-model="input"

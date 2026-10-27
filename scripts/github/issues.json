@@ -279,14 +279,6 @@
    ]
   },
   {
-   "title": "Fold errors and notes above the message box into the single status line",
-   "body": "See docs/DESIGN_NOTES.md.\n\nSee `docs/FEATURES.md` and `ROADMAP.md`.",
-   "milestone": "M3",
-   "labels": [
-    "ui"
-   ]
-  },
-  {
    "title": "Account settings: sessions, two-factor, passkeys, delete account, export data",
    "body": "See `docs/FEATURES.md` and `ROADMAP.md`.",
    "milestone": "M3",

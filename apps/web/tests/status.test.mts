@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { statusFromParts, stepAnchor } from '../src/lib/status.ts'
+import { noticeFor, statusFromParts, stepAnchor } from '../src/lib/status.ts'
 
 let passed = 0
 const test = (name: string, fn: () => void) => { fn(); passed++; console.log(`PASS ${name}`) }
@@ -110,6 +110,33 @@ test('reasoning alone is not a step: it already has its own row above the answer
 test('anchors are stable and safe to use as element ids', () => {
   assert.equal(stepAnchor('abc123', 2), 'step-abc123-2')
   assert.equal(stepAnchor('a b/c<d>', 0), 'step-abcd-0')
+})
+
+const idle = statusFromParts([], 'ready')
+const working = statusFromParts([{ type: 'tool-analyze_table', state: 'input-available' }], 'streaming')
+const waiting = statusFromParts([{ type: 'tool-create_spreadsheet', state: 'approval-requested' }], 'streaming')
+
+test('an error owns the line, with a way to recover and a way to dismiss it', () => {
+  const n = noticeFor({ error: 'Add an API key for OpenRouter in Models.', view: idle })!
+  assert.equal(n.kind, 'error')
+  assert.equal(n.text, 'Add an API key for OpenRouter in Models.')
+  assert.deepEqual(n.actions.map(a => a.id), ['retry', 'models'])
+  assert.equal(n.dismissible, true)
+})
+
+test('an error wins over a chat-only note and over live work', () => {
+  assert.equal(noticeFor({ error: 'x', chatOnly: true, view: working })!.kind, 'error')
+})
+
+test('the chat-only note shows when idle, and never talks over live work or an approval', () => {
+  assert.equal(noticeFor({ chatOnly: true, view: idle })!.kind, 'info')
+  assert.equal(noticeFor({ chatOnly: true, view: working }), null)
+  assert.equal(noticeFor({ chatOnly: true, view: waiting }), null)
+})
+
+test('with nothing to say, the normal status line is used', () => {
+  assert.equal(noticeFor({ view: idle }), null)
+  assert.equal(noticeFor({ chatOnly: false, view: working }), null)
 })
 
 console.log(`\n${passed} passed`)

@@ -30,7 +30,7 @@ Decisions made while building, and why:
 - **No sideways scrolling anywhere.** The old chip row is gone.
 - **The library's own scroll-to-bottom button was replaced.** It was positioned as a percentage of the screen and hid behind the message box. The first automated check only measured its position, so it passed while the button was effectively invisible. The check now tests what a finger would actually hit.
 
-Still to do: errors and notes (for example "this model cannot use tools") are separate flat lines above the message box. The plan was to fold them into the same single line.
+- **Errors and notes share the same line.** The line above the message box has one owner at a time. An error comes first (with "Try again", "Models" and a dismiss button as plain text buttons, announced as an alert). The "this model cannot use tools" note comes next, but only while nothing is running or waiting, so it never talks over live work. Otherwise the normal status line shows. There is never a second block. The rule is a tested pure function (`noticeFor` in `src/lib/status.ts`) and a 14-check browser suite (`tests/browser/notices.py`).
 
 ## Built: the approval card
 

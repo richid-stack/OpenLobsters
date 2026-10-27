@@ -22,7 +22,7 @@ Legend: ✅ done · 🚧 in progress or partly done · 📋 not started
 
 ## Now, next, later
 
-**Now** (finish M2 and prove M1): run the native model adapters and GitHub/Google sign-in against the real services; a screen listing your files with delete; clean up files when an account is deleted; one-line status for errors and notes above the message box.
+**Now** (finish M2 and prove M1): run the native model adapters and GitHub/Google sign-in against the real services; a screen listing your files with delete; clean up files when an account is deleted.
 
 **Next** (M3): the task model and Orchestrator, the Tool Registry with permissions, the audit log, usage tracking, a content security policy, versioned migrations, shared rate limiting, and the first-load size work.
 

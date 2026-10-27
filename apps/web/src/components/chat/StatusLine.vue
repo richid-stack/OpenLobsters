@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from 'vue'
 import { stepAnchor } from '../../lib/status'
-import type { StatusView } from '../../lib/status'
+import type { Notice, StatusView } from '../../lib/status'
 import LobMark from '../brand/LobMark.vue'
 import StepTray from './StepTray.vue'
 
 // One quiet line above the message box. While working it says what is happening. When it has steps, tapping
 // it opens the tray of steps. When something is waiting for the person, tapping it jumps to that instead.
 
-const props = defineProps<{ view: StatusView, messageId?: string }>()
-const emit = defineEmits<{ jump: [anchor: string] }>()
+const props = defineProps<{ view: StatusView, messageId?: string, notice?: Notice | null }>()
+const emit = defineEmits<{ jump: [anchor: string], action: [id: 'retry' | 'models' | 'dismiss'] }>()
 
 const open = ref(false)
 const button = ref<HTMLButtonElement | null>(null)
@@ -55,8 +55,55 @@ defineExpose({ close: () => { open.value = false } })
 </script>
 
 <template>
+  <!-- An error or a note takes the place of the status line, so there is only ever one line to read. -->
   <div
-    v-if="view.line || hasSteps"
+    v-if="notice"
+    class="px-1"
+    :role="notice.kind === 'error' ? 'alert' : 'status'"
+    data-status-notice
+  >
+    <div class="flex items-start gap-2.5 px-2.5 py-2 text-sm">
+      <UIcon
+        :name="notice.kind === 'error' ? 'i-lucide-circle-alert' : 'i-lucide-info'"
+        class="mt-0.5 size-4 shrink-0"
+        :class="notice.kind === 'error' ? 'text-error' : 'text-muted'"
+      />
+      <div class="min-w-0 flex-1">
+        <p class="line-clamp-3">
+          <template v-if="notice.title">
+            <span class="font-medium text-highlighted">{{ notice.title }}</span>{{ ' ' }}
+          </template>
+          <span :class="notice.kind === 'error' ? 'text-default' : 'text-muted'">{{ notice.text }}</span>
+        </p>
+        <div
+          v-if="notice.actions.length"
+          class="mt-0.5 flex flex-wrap gap-x-4"
+        >
+          <button
+            v-for="a in notice.actions"
+            :key="a.id"
+            type="button"
+            class="min-h-9 text-sm font-medium text-primary hover:underline focus-visible:outline-2 focus-visible:outline-primary"
+            @click="emit('action', a.id)"
+          >
+            {{ a.label }}
+          </button>
+        </div>
+      </div>
+      <UButton
+        v-if="notice.dismissible"
+        icon="i-lucide-x"
+        size="xs"
+        color="neutral"
+        variant="ghost"
+        aria-label="Dismiss"
+        @click="emit('action', 'dismiss')"
+      />
+    </div>
+  </div>
+
+  <div
+    v-else-if="view.line || hasSteps"
     class="px-1"
     role="status"
     aria-live="polite"

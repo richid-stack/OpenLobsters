@@ -57,7 +57,7 @@ Discover, Build, Lab, Compose, Skills Studio, Forge, Intelligence, Benchmark, Gr
 | Approvals (allow once, always allow, deny) | Real | Enforced by the runtime and recorded by the server. The card says exactly what will be saved and where. "Always allow" lasts one page session. |
 | Live status line and step tray | **Real** | One line while working; tap to open a list of the actions taken; tap a step to jump to it in the chat; a waiting approval jumps straight to the approval. Drag, Escape and close button to put away. Built from real events, with tests and a 23-check browser suite. See `docs/DESIGN_NOTES.md`. |
 | Back to the latest button | Real | Appears when scrolled up; attached above the message box. |
-| Errors shown with Try again | Real | |
+| Errors and notes in the one status line | **Real** | An error or a "this model only chats" note takes the place of the status line, with plain text actions (Try again, Models, Dismiss). 14-check browser suite. |
 | Light and dark, mobile first | Real | |
 | Custom icons and brand mark | Real | |
 | Accounts and sign-in | **Partial, real** | Email and password, GitHub, Google, Microsoft and any OpenID Connect provider. Sessions, sign-out, password reset and email confirmation (when email is configured), closed sign-ups. Tested: email flows and the OpenID Connect path (fake provider, in a browser). **Not run against real GitHub, Google or Microsoft.** No two-factor, passkeys, account deletion or profile page yet. |
@@ -69,7 +69,7 @@ Discover, Build, Lab, Compose, Skills Studio, Forge, Intelligence, Benchmark, Gr
 | Real verification of outputs | **Real (spreadsheets)** | See system 8. |
 | Files the app makes: storage and download | **Real** | Per-person, size and count limits, owner-only download, delete (API). Not built: a screen listing your files, clean-up of files when an account is deleted. |
 | Billing, teams, sharing | Not started | |
-| Tests | 107 passing | Unit tests for every server module, plus six browser suites (`apps/web/tests/browser`) that drive the real app: tray, accounts, models, logos, demo flow and the real file flow. |
+| Tests | 111 passing | Unit tests for every server module, plus seven browser suites (`apps/web/tests/browser`) that drive the real app: tray, notices, accounts, models, logos, demo flow and the real file flow. |
 
 ## What the first usable version still needs, in order
 
